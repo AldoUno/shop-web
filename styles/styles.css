@@ -1,0 +1,282 @@
+@import url('https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,700;1,500&display=swap');
+
+.alternar tbody tr:nth-child(odd) {
+  background: var(--surface-ground);
+}
+
+.profile__divider {
+  color: var(--primary-color);
+}
+
+.p-dialog-mask {
+  padding: 1rem;
+}
+
+.login__lottie__reducir {
+  margin-top: -7rem;
+}
+
+.divider-beneficiario {
+  width: 90%;
+}
+
+.dialog-buscador {
+  max-width: 100%;
+  width: 75rem;
+  margin: .5rem;
+}
+
+.p-dropdown-filter-container input:focus {
+  width: 100%;
+}
+
+@media screen and (max-width: 600px) {
+  .ocupar__width {
+    width: 100%;
+    margin: 0 1rem;
+  }
+
+  .ocupar_width__hijo {
+    width: 100% !important;
+  }
+
+  /* BUSCADOR DE UBICACIONES EN MOBILE */
+
+  .leaflet-control {
+    max-width: 200px;
+  }
+
+  .leaflet-control-geocoder-form {
+    max-width: 150px;
+  }
+
+  /* ESTILOS DE CARD EN MOBILE */
+
+  .card {
+    padding: .5rem;
+    border: 0;
+  }
+
+  .divider-beneficiario {
+    width: 80%;
+  }
+
+}
+
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+
+  select:focus,
+  textarea:focus,
+  input:focus {
+    font-size: 1rem;
+    max-height: 100%;
+    max-width: 100%;
+    height: auto;
+    width: auto;
+    -webkit-text-size-adjust: none;
+  }
+}
+
+.main {
+  min-height: 100vh;
+  font-family: 'Ubuntu', sans-serif;
+  box-sizing: border-box;
+}
+
+.container__llamador {
+  display: grid;
+  grid-template-columns: 1fr 500px;
+  column-gap: 2rem;
+  height: 100vh;
+}
+
+.container__llamador__principal {
+  display: grid;
+  grid-template-rows: 100px 1fr 1fr;
+  padding: 1rem;
+}
+
+.container__logo {
+  display: flex;
+  align-items: flex-start;
+  border-bottom: 1px solid #fff;
+}
+
+.container__logo h3 {
+  margin: .5rem 0 0 0;
+  font-weight: 700;
+}
+
+.container__logo h2 {
+  margin: 0
+}
+
+.container__logo__text {
+  margin-left: .7rem;
+}
+
+.description {
+
+  font-size: 1rem;
+  color: #555555
+}
+
+.name {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #002F7A
+}
+
+.container__name {
+  display: flex;
+  align-items: center;
+  font-size: 6rem;
+  color: #002F7A;
+  font-weight: 700;
+}
+
+.container__detalle {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: flex-end;
+}
+
+.container__detalle__action h3 {
+  margin: 0;
+  color: #555555;
+  font-weight: 700;
+}
+
+.container__detalle__action h2 {
+  margin: 0;
+  color: #002F7A;
+  font-weight: 700;
+}
+
+.detalle__box__container {
+  background-color: #002F7A;
+  color: #fff;
+  padding: 1rem;
+  text-align: center;
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.detalle__number {
+  font-size: 17rem;
+}
+
+.detalle__which__box {
+  font-size: 2rem;
+  margin-top: 2rem;
+}
+
+/* LLAMADOR SECUNDARIO */
+
+.llamador__secundario {
+  padding: 1rem;
+}
+
+.container__simple {
+  background-color: #4E697E;
+  color: #fff;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+}
+
+.simple__name {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.simple__which__box {
+  font-size: 1rem;
+
+}
+
+/* LOADING PARA EL MAPA */
+
+.loader {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: inline-block;
+  border-top: 4px solid #002F7A;
+  border-right: 4px solid transparent;
+  box-sizing: border-box;
+  animation: rotation 1s linear infinite;
+}
+
+.loader::after {
+  content: '';
+  box-sizing: border-box;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border-bottom: 4px solid #6366F1;
+  border-left: 4px solid transparent;
+}
+
+@keyframes rotation {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* DIMENSIONES PARA QUE LAS TABLAS DE DATOS SE RESPONSIVE */
+
+.datatable-responsive th {
+  min-width: 12rem;
+}
+
+.datatable-responsive .column__check {
+  min-width: 1rem;
+}
+
+.datatable-responsive .column__id {
+  width: 10rem;
+}
+
+.p-message-wrapper {
+  padding: .5rem !important;
+}
+
+.checkbox__caretaker {
+  width: 40px;
+  height: 40px;
+}
+
+.checkbox__caretaker div {
+  width: 40px !important;
+  height: 40px !important;
+}
+
+.checkbox__caretaker span {
+  font-size: 2rem;
+}
+
+.rechazar {
+  color: var(--red-500);
+}
+
+.aprobar {
+  color: var(--green-500);
+}
+
+.loading__principal {
+  height: calc(100vh - 9rem);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
