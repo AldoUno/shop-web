@@ -7,7 +7,7 @@ import { InputText } from 'primereact/inputtext';
 import { Dropdown } from 'primereact/dropdown';
 import { Toast } from 'primereact/toast';
 import { classNames } from 'primereact/utils';
-import { List, Submit, Edit } from '../../../../utils/service/fetchData';
+import { List, Submit, Edit, Delete } from '../../../../utils/service/fetchData';
 import Guia from '../../../../utils/broadcrumb';
 import routes from '../../../../utils/routes';
 import { messages } from '../../../../utils/messages';
@@ -25,20 +25,16 @@ const Usuarios = React.memo(() => {
     name: '',
     surname: '',
     cedula: '',
-    ruc: '',
     phone: '',
     email: '',
     rol: '',
     password: '',
-    status: '1',
-    an8: '',
-    cod_venta: '',
-    suc_planta: '',
   };
 
   let emptyEdit = {}
 
   const [items, setItems] = useState([]);
+  const [deleteItemDialog, setDeleteitemDialog] = useState(false);
   const [itemDialog, setItemDialog] = useState(false);
   const [item, setItem] = useState(emptyItem);
   const [submitted, setSubmitted] = useState(null)
@@ -57,14 +53,10 @@ const Usuarios = React.memo(() => {
     name: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
     surname: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
     cedula: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
-    ruc: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
     email: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
     phone: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
     status: { value: '', matchMode: FilterMatchMode.STARTS_WITH },
     "rol.description": { value: '', matchMode: FilterMatchMode.STARTS_WITH },
-    an8: { value: '', matchMode: FilterMatchMode.STARTS_WITH },
-    cod_venta: { value: '', matchMode: FilterMatchMode.STARTS_WITH },
-    suc_planta: { value: '', matchMode: FilterMatchMode.STARTS_WITH },
   });
   const [statuses] = useState(['ACTIVO', 'INACTIVO']);
   const path = 'all-users'
@@ -93,7 +85,11 @@ const Usuarios = React.memo(() => {
         }
       })))
       .then(data => {
-        setItems(data[0].data)
+        const newData = data[0].data.map(item => ({
+          ...item,
+          status: item.status === 1 ? 'Activo' : 'Inactivo'
+        }))
+        setItems(newData)
         setRoles(data[1].data)
       })
       .catch(error => {
@@ -155,6 +151,7 @@ const Usuarios = React.memo(() => {
         const newData = {
           ...item,
           ...data.data,
+          ['status']: data.data?.status === 1 ? 'Activo' : 'Inactivo'
         }
         delete newData.password
         setItems([...items, newData])
@@ -171,7 +168,7 @@ const Usuarios = React.memo(() => {
   const editarItem = () => {
     setLoading1(true);
     const index = findIndexById(item.id);
-
+    item.status = item?.status === 'Activo' ? 1 : 0
     if (item.rol) {
       item.rol_id = item.rol.id
     }
@@ -186,7 +183,10 @@ const Usuarios = React.memo(() => {
           throw new Error(description)
         }
       })
-      .then(() => items[index] = item)
+      .then(() => {
+        item.status = item?.status === 1 ? 'Acitvo' : 'Inactivo'
+        items[index] = item
+      })
       .catch((error) => toast.current?.show({ severity: 'warn', summary: 'Error !', detail: error.message || "Error en el servidor. Contacte a soporte", life: 3000 }))
       .finally(() => {
         setItem(emptyItem)
@@ -196,14 +196,10 @@ const Usuarios = React.memo(() => {
 
   const isValidItem = () => {
     let requiredFields = [];
-    requiredFields = ['name', 'surname', 'email', 'phone', 'cedula', 'rol', 'an8'];
+    requiredFields = ['name', 'surname', 'email', 'phone', 'cedula', 'rol'];
 
     if (!item.id) {
       requiredFields.push('password')
-    }
-
-    if (item?.rol?.description !== 'administrador') {
-      requiredFields.push('suc_planta', 'cod_venta')
     }
 
     for (const field of requiredFields) {
@@ -238,11 +234,54 @@ const Usuarios = React.memo(() => {
     setItemDialog(false);
   };
 
+  const eliminarItem = () => {
+    setLoading1(true);
+    const index = findIndexById(item.id);
+    Delete(item.id, 'delete-user')
+      .then(async response => {
+        if (response.ok) {
+          toast.current?.show(messages.mensajeExitosoDelete)
+          return response.json()
+        } else {
+          const { message } = await response.json()
+          throw new Error(message)
+        }
+      })
+      .then(() => items.splice(index, 1))
+      .catch((error) => toast.current?.show({ severity: 'warn', summary: 'Error !', detail: error.message || "Error en el servidor. Contacte a soporte", life: 3000 }))
+      .finally(() => {
+        setItem(emptyItem)
+        setLoading1(false)
+      })
+  };
+
   const editItem = (item) => {
     setItem(item);
     setNuevo(false);
     setItemDialog(true);
   };
+
+  const confirmDeleteItem = (item) => {
+    setItem(item);
+    setDeleteitemDialog(true);
+  };
+
+  const hideDeleteitemDialog = () => {
+    setDeleteitemDialog(false);
+  };
+
+  const deleteItem = () => {
+    eliminarItem();
+    setDeleteitemDialog(false);
+    setItem(emptyItem);
+  };
+
+  const deleteItemDialogFooter = (
+    <>
+      <Button label="No" icon="pi pi-times" className="p-button-text" type="submit" onClick={hideDeleteitemDialog} />
+      <Button label="Si" icon="pi pi-check" className="p-button-text" onClick={() => deleteItem()} />
+    </>
+  );
 
   const onInputChange = (e, name) => {
     let val = (e.target && e.target.value) || '';
@@ -266,13 +305,9 @@ const Usuarios = React.memo(() => {
   const actionBodyTemplate = (rowData) => {
     return (
       <>
-        {
-          permissions?.users?.update === "1"
-            ? <Button icon="pi pi-pencil" className="p-button-rounded p-button-success mr-2" onClick={() => editItem(rowData)} tooltip="Editar" tooltipOptions={{ position: 'bottom' }} />
-            : null
-        }
+        <Button icon="pi pi-pencil" className="p-button-rounded p-button-success mr-2" onClick={() => editItem(rowData)} tooltip="Editar" tooltipOptions={{ position: 'bottom' }} />
+        <Button icon="pi pi-trash" className="p-button-rounded p-button-danger" onClick={() => confirmDeleteItem(rowData)} tooltip="Eliminar" tooltipOptions={{ position: 'bottom' }} />
       </>
-
     )
   }
 
@@ -281,11 +316,8 @@ const Usuarios = React.memo(() => {
       <h5 className="m-0">Usuarios</h5>
 
       <div className="flex flex-wrap mt-2 md:mt-0">
-        {
-          permissions?.users?.write === "1"
-            ? <Button label="Nuevo" icon="pi pi-plus" className="p-button-success mr-2" onClick={openNew} />
-            : null
-        }
+        <Button label="Nuevo" icon="pi pi-plus" className="p-button-success mr-2" onClick={openNew} />
+
         <Button label="Actualizar" icon="pi pi-sync" className="mr-2" onClick={solicitarDatos} />
         <span className="block mt-2 md:mt-0 p-input-icon-left">
           <i className="pi pi-search" />
@@ -303,11 +335,11 @@ const Usuarios = React.memo(() => {
   );
 
   const statusBodyTemplate = (rowData) => {
-    const showStatus = rowData.status === "1" ? 'Activo' : 'Inactivo'
+    const showStatus = rowData.status
     return (
       <>
         <span className="p-column-title">Estado</span>
-        <span className={`usuario-badge status-${showStatus.toLowerCase()}`}>{showStatus}</span>
+        <span className={`usuario-badge status-${showStatus?.toLowerCase()}`}>{showStatus}</span>
       </>
     );
   };
@@ -320,7 +352,7 @@ const Usuarios = React.memo(() => {
 
   const statusRowFilterTemplate = (options) => {
     return (
-      <Dropdown value={options.value === "1" && 'ACTIVO' || options.value === '0' && 'INACTIVO' || ''} options={statuses} onChange={(e) => options.filterApplyCallback(e.value === 'ACTIVO' && '1' || e.value === 'INACTIVO' && '0' || '')} itemTemplate={statusItemTemplate} placeholder="Estado" className="p-column-filter" showClear style={{ minWidth: '10em' }} />
+      <Dropdown value={options.value} options={statuses} onChange={(e) => options.filterApplyCallback(e.value)} itemTemplate={statusItemTemplate} placeholder="Estado" className="p-column-filter" showClear style={{ minWidth: '10em' }} />
     )
   }
 
@@ -382,10 +414,6 @@ const Usuarios = React.memo(() => {
               <Column field="email" header="Correo" sortable filter filterField='email' filterPlaceholder="Correo"></Column>
               <Column field="phone" header="Telefono" sortable filter filterField='phone' filterPlaceholder="Telefono"></Column>
               <Column field="rol.description" header="Rol" sortable filter filterField='rol.description' filterPlaceholder="Rol"></Column>
-              <Column field="an8" header="AN8" sortable filter filterField='an8' filterPlaceholder="AN8"></Column>
-              <Column field="suc_planta" header="Suc Planta" sortable filter filterField='suc_planta' filterPlaceholder="Suc Planta"></Column>
-              <Column field="cod_venta" header="Cod Venta" sortable filter filterField='cod_venta' filterPlaceholder="Cod Venta"></Column>
-
               <Column field="status" header="Estado" showFilterMenu={false} body={statusBodyTemplate} filter filterElement={statusRowFilterTemplate}></Column>
               <Column field="acciones" header="Acciones" body={actionBodyTemplate}></Column>
             </DataTable>
@@ -453,17 +481,6 @@ const Usuarios = React.memo(() => {
                     className={classNames({ 'p-invalid': submitted && !item.cedula })} />
                   {submitted && !item.cedula && <small className="p-invalid p-error">El CI es requerido.</small>}
                 </div>
-                <div className={classNames({ 'p-input-filled': item.ruc }, 'field col')}>
-                  <label>RUC</label>
-                  <InputText
-                    id="ruc"
-                    value={item?.ruc || ''}
-                    onChange={(e) => onInputChange(e, 'ruc')}
-                    placeholder={999.999}
-                  />
-                </div>
-              </div>
-              <div className="formgrid grid">
                 <div className={classNames({ 'p-input-filled': item.rol }, 'field col')}>
                   <label>Rol</label>
                   <Dropdown
@@ -476,45 +493,7 @@ const Usuarios = React.memo(() => {
                   />
                   {submitted && !item.rol && <small className="p-invalid p-error">El ROL es requerido.</small>}
                 </div>
-
-                <div className={classNames({ 'p-input-filled': item.an8 }, 'field col')}>
-                  <label>AN8</label>
-                  <InputText
-                    id="an8"
-                    value={item.an8}
-                    onChange={(e) => onInputChange(e, 'an8')}
-                    placeholder="Identificador del usuario"
-                  />
-                  {submitted && !item.an8 && <small className="p-invalid p-error">El AN8 es requerido.</small>}
-                </div>
               </div>
-              {
-                item?.rol?.description !== 'administrador'
-                  ? <div className="formgrid grid">
-                    <div className={classNames({ 'p-input-filled': item.cod_venta }, 'field col')}>
-                      <label>Código Venta</label>
-                      <InputText
-                        id="cod_venta"
-                        value={item.cod_venta}
-                        onChange={(e) => onInputChange(e, 'cod_venta')}
-                        placeholder="Código Venta"
-                      />
-                      {submitted && !item.cod_venta && <small className="p-invalid p-error">El CÓDIGO VENTA es requerido.</small>}
-                    </div>
-
-                    <div className={classNames({ 'p-input-filled': item.suc_planta }, 'field col')}>
-                      <label>Sucursal Planta</label>
-                      <InputText
-                        id="suc_planta"
-                        value={item.suc_planta}
-                        onChange={(e) => onInputChange(e, 'suc_planta')}
-                        placeholder="Sucursal Planta"
-                      />
-                      {submitted && !item.suc_planta && <small className="p-invalid p-error">La SUCURSAL PLANTA es requerida.</small>}
-                    </div>
-                  </div>
-                  : null
-              }
               <div className="formgrid grid">
                 <div className={classNames({ 'p-input-filled': item.password }, 'field col-12 md:col-6')}>
                   <label htmlFor="password">{item.id ? 'Resetear Password' : 'Password'}</label>
@@ -546,8 +525,8 @@ const Usuarios = React.memo(() => {
                         value={item.status}
                         onChange={e => onInputChange(e, 'status')}
                         options={[
-                          { status: 'Activo', value: '1' },
-                          { status: 'Inactivo', value: '0' }
+                          { status: 'Activo', value: 'Activo' },
+                          { status: 'Inactivo', value: 'Acitvo' }
                         ]}
                         optionLabel="status"
                         placeholder="Selecciona el status"
@@ -555,6 +534,17 @@ const Usuarios = React.memo(() => {
                     </div>
                   )
                 }
+              </div>
+            </Dialog>
+
+            <Dialog visible={deleteItemDialog} style={{ width: '450px' }} header="Confirmar" modal footer={deleteItemDialogFooter} onHide={hideDeleteitemDialog}>
+              <div className="flex align-items-center justify-content-center">
+                <i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: '2rem' }} />
+                {item && (
+                  <span>
+                    Estás seguro que quieres eliminar a <b>{item.name + ' ' + item.surname}</b>?
+                  </span>
+                )}
               </div>
             </Dialog>
           </div>

@@ -7,14 +7,14 @@ const LayoutOut = ({ children }) => {
     const contextPath = getConfig().publicRuntimeConfig.contextPath;
 
     PrimeReact.ripple = true;
-    const titulo = children + ' | Franz' 
+    const titulo = children + ' | Shop' 
     return (
         <React.Fragment>
             <Head>
                 <title>{titulo}</title>
                 <meta charSet="UTF-8" />
                 <meta name="viewport" content="initial-scale=1, width=device-width" />
-                <link rel="icon" href={`${contextPath}/favicon.ico`} type="image/x-icon"></link>
+                <link rel="icon" href={`${contextPath}/favicon.png`} type="image/x-icon"></link>
             </Head>
         </React.Fragment>
     );

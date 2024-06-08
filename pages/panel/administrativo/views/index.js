@@ -224,17 +224,8 @@ const Views = React.memo(() => {
   const actionBodyTemplate = (rowData) => {
     return (
       <> 
-      {
-        permissions?.views?.update === "1"
-        ? <Button icon="pi pi-pencil" className="p-button-rounded p-button-success mr-2" onClick={() => editItem(rowData)} tooltip="Editar" tooltipOptions={{ position: 'bottom' }} />
-        : null
-      }
-
-      {
-        permissions?.views?.delete === "1"
-        ? <Button icon="pi pi-trash" className="p-button-rounded p-button-danger" onClick={() => confirmDeleteItem(rowData)} tooltip="Eliminar" tooltipOptions={{ position: 'bottom' }} />
-        : null
-      }
+        <Button icon="pi pi-pencil" className="p-button-rounded p-button-success mr-2" onClick={() => editItem(rowData)} tooltip="Editar" tooltipOptions={{ position: 'bottom' }} />
+        <Button icon="pi pi-trash" className="p-button-rounded p-button-danger" onClick={() => confirmDeleteItem(rowData)} tooltip="Eliminar" tooltipOptions={{ position: 'bottom' }} />
       </>
     );
   };
@@ -244,12 +235,7 @@ const Views = React.memo(() => {
       <h5 className="m-0">Vistas</h5>
 
       <div className="flex flex-wrap mt-2 md:mt-0">
-        {
-          permissions?.views?.write === "1"
-          ? <Button label="Nuevo" icon="pi pi-plus" className="p-button-success mr-2" onClick={openNew} />
-          : null
-        }
-
+        <Button label="Nuevo" icon="pi pi-plus" className="p-button-success mr-2" onClick={openNew} />
         <Button label="Actualizar" icon="pi pi-sync" className="mr-2" onClick={solicitarDatos} />
         <span className="block mt-2 md:mt-0 p-input-icon-left">
           <i className="pi pi-search" />

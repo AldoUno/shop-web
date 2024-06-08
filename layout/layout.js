@@ -30,50 +30,6 @@ const Layout = (props) => {
   const dispatch = useDispatch()
 
   useEffect(() => {
-    const controller = new AbortController();
-    const { signal } = controller;
-
-    dispatch({ type: 'show' });
-
-    Promise.all([
-      Refresh(signal),
-    ])
-      .then(([refreshResponse]) => {
-        if (refreshResponse.status !== 200) {
-          throw new Error('No se pudo obtener los datos del usuario. Intentalo de nuevo.');
-        }
-
-        return Promise.all([
-          refreshResponse.json(),
-        ]);
-      })
-      .then(([data]) => {
-        const permissionsObject = data.user.permissions.reduce((acc, curr) => {
-          const [key] = Object.keys(curr);
-          acc[key] = curr[key];
-          return acc;
-        }, {});
-
-        if(!permissionsObject.hasOwnProperty('web')) {
-          deleteCookie('token')
-          router.push(routes.login)
-          return
-        }
-
-        dispatch({ type: 'add', payload: { name: data.user.name + ' ' + data.user.surname, rol: data?.user?.rol?.description, permissions: permissionsObject } })
-        setCookie('token', data.authorisation.token)
-      })
-      .catch(error => {
-        if (error.name !== 'AbortError') {
-          toast.current.show(messages.mensajeErrorServer);
-        }
-      })
-      .finally(() => dispatch({ type: 'hide' }));
-
-    return () => controller.abort();
-  }, []);
-
-  useEffect(() => {
     if (state.progreso !== '0px') return setBlockUi(true)
 
     setBlockUi(false)
@@ -171,11 +127,11 @@ const Layout = (props) => {
   return (
     <React.Fragment>
       <Head>
-        <title>Franz | Grupo AJ Vierci</title>
+        <title>Shop | Grupo AJ Vierci</title>
         <meta charSet="UTF-8" />
         <meta name="description" content="Sistema de gestión de solicitudes de notas de crédito" />
         <meta name="viewport" content="initial-scale=1, width=device-width" />
-        <link rel="icon" href={`${contextPath}/favicon.ico`} type="image/x-icon"></link>
+        <link rel="icon" href={`${contextPath}/favicon.png`} type="image/x-icon"></link>
 
         <link rel="manifest" href={`${contextPath}/manifest.json`} />
         <meta name="theme-color" content="#90cdf4" />

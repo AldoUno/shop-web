@@ -16,8 +16,6 @@ import { NAME_WEB } from '../utils/environment';
 import { deleteCookie } from 'cookies-next';
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 import { useDispatch } from 'react-redux';
-import { messages } from '../utils/messages';
-import Image from 'next/image';
 
 const AppTopbar = forwardRef((props, ref) => {
   const user = useSelector(state => state.usuario)
@@ -69,7 +67,7 @@ const AppTopbar = forwardRef((props, ref) => {
         return (
           <div className='w-full flex align-items-center p-2'>
             <div style={{ minWidth: '30px', maxWidth: '30px', marginRight: '5px' }}>
-              <Avatar image={`${contextPath}/layout/images/franz-logo.png`} className="mr-2" shape="circle" style={{ width: '100%' }} />
+              <Avatar image={`${contextPath}/layout/images/logo.png`} className="mr-2" shape="circle" style={{ width: '100%' }} />
             </div>
             <div className="flex flex-column align">
               <span className="font-bold">{user.name || "Usuario"}</span>
@@ -94,7 +92,7 @@ const AppTopbar = forwardRef((props, ref) => {
       <div className="layout-topbar">
         <Progreso />
         <Link href={routes.inicio} className="layout-topbar-logo">
-          <img src={`${contextPath}/layout/images/franz-logo.png`} alt="logo" style={{ width: '4.5rem', height: '4.5rem' }} />
+          <img src={`${contextPath}/layout/images/logo.png`} alt="logo" style={{ width: '4.5rem', height: '4.5rem' }} />
           <span>{NAME_WEB}</span>
         </Link>
 

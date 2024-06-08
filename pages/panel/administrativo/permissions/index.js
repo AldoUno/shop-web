@@ -83,7 +83,12 @@ const Permissions = React.memo(() => {
       .then(data => {
         setRoles(data[0].data)
         setViews(data[1].data)
-        setItems(data[2].data)
+        const newData = data[2].data.map(item => ({
+          ...item,
+          status: item.status === 1 ? 'Activo' : 'Inactivo'
+        }))
+
+        setItems(newData)
       })
       .catch(error => {
         if (error.name !== 'AbortError') {
@@ -133,7 +138,8 @@ const Permissions = React.memo(() => {
       .then((data) => {
         const newData = {
           ...item,
-          ...data.data
+          ...data.data,
+          ['status']: data.data?.status === 1 ? 'Activo' : 'Inactivo'
         }
         setItems([...items, newData])
       })
@@ -158,6 +164,7 @@ const Permissions = React.memo(() => {
   };
   const editarItem = () => {
     setLoading1(true);
+    item.status = item?.status === 'Activo' ? 1 : 0
 
     const index = findIndexById(item.id);
     Edit(item, 'update-permission', item.id)
@@ -170,7 +177,10 @@ const Permissions = React.memo(() => {
           throw new Error(msg)
         }
       })
-      .then(() => items[index] = item)
+      .then(() => {
+        item.status = item?.status === 1 ? 'Acitvo' : 'Inactivo'
+        items[index] = item
+      })
       .catch((error) => toast.current?.show({ severity: 'warn', summary: 'Error !', detail: error.message || "Error en el servidor. Contacte a soporte", life: 3000 }))
       .finally(() => {
         setItem(emptyItem)
@@ -262,7 +272,7 @@ const Permissions = React.memo(() => {
   };
 
   const statusBodyTemplate = (rowData) => {
-    const showStatus = rowData.status === "1" ? 'Activo' : 'Inactivo'
+    const showStatus = rowData.status
     return (
       <>
         <span className="p-column-title">Estado</span>
@@ -277,7 +287,7 @@ const Permissions = React.memo(() => {
     )
   }
 
-  const statusRowFilterTemplate = (options) =>  <Dropdown value={options.value === "1" && 'ACTIVO' || options.value === '0' && 'INACTIVO' || ''} options={statuses} onChange={(e) => options.filterApplyCallback(e.value === 'ACTIVO' && '1' || e.value === 'INACTIVO' && '0' || '')} itemTemplate={statusItemTemplate} placeholder="Estado" className="p-column-filter" showClear style={{ minWidth: '10em' }} />
+  const statusRowFilterTemplate = (options) => <Dropdown value={options.value} options={statuses} onChange={(e) => options.filterApplyCallback(e.value)} itemTemplate={statusItemTemplate} placeholder="Estado" className="p-column-filter" showClear style={{ minWidth: '10em' }} />
 
 
   const rolBodyTemplate = (rowData) => rowData?.rol?.description
@@ -286,18 +296,9 @@ const Permissions = React.memo(() => {
 
   const actionBodyTemplate = (rowData) => {
     return (
-      <> 
-      {
-        permissions?.permissions?.update === "1"
-        ? <Button icon="pi pi-pencil" className="p-button-rounded p-button-success mr-2" onClick={() => editItem(rowData)} tooltip="Editar" tooltipOptions={{ position: 'bottom' }} />
-        : null
-      }
-
-      {
-        permissions?.permissions?.delete === "1"
-        ? <Button icon="pi pi-trash" className="p-button-rounded p-button-danger" onClick={() => confirmDeleteItem(rowData)} tooltip="Eliminar" tooltipOptions={{ position: 'bottom' }} />
-        : null
-      }
+      <>
+        <Button icon="pi pi-pencil" className="p-button-rounded p-button-success mr-2" onClick={() => editItem(rowData)} tooltip="Editar" tooltipOptions={{ position: 'bottom' }} />
+        <Button icon="pi pi-trash" className="p-button-rounded p-button-danger" onClick={() => confirmDeleteItem(rowData)} tooltip="Eliminar" tooltipOptions={{ position: 'bottom' }} />
       </>
     );
   };
@@ -307,11 +308,7 @@ const Permissions = React.memo(() => {
       <h5 className="m-0">Permisos</h5>
 
       <div className="flex flex-wrap mt-2 md:mt-0">
-        {
-          permissions?.permissions?.write === "1"
-          ? <Button label="Nuevo" icon="pi pi-plus" className="p-button-success mr-2" onClick={openNew} />
-          : null
-        }
+        <Button label="Nuevo" icon="pi pi-plus" className="p-button-success mr-2" onClick={openNew} />
         <Button label="Actualizar" icon="pi pi-sync" className="mr-2" onClick={getAllData} />
         <span className="block mt-2 md:mt-0 p-input-icon-left">
           <i className="pi pi-search" />
@@ -361,7 +358,7 @@ const Permissions = React.memo(() => {
               currentPageReportTemplate="Mostrando del {first} al {last} de {totalRecords} items"
               filters={filters}
               filterDisplay="row"
-              globalFilterFields={['id']}
+              globalFilterFields={['id', 'rol.description', 'view.description']}
               emptyMessage="No se encontraron permisos."
               header={header}
               size='small'

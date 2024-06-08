@@ -17,10 +17,10 @@ const AppMenu = () => {
         {
             label: 'Seguridad',
             items: [
-                { label: 'Usuarios', icon: 'pi pi-user-edit', to: routes.usuarios, badge: 'NEW', visible: checkVisible('users', permissions)},
-                { label: 'Roles', icon: 'pi pi-sitemap', to: routes.roles, badge: 'NEW', visible: checkVisible('roles', permissions) },
-                { label: 'Vistas', icon: 'pi pi-bars', to: routes.views, badge: 'NEW', visible: checkVisible('views', permissions) },
-                { label: 'Permisos', icon: 'pi pi-lock', to: routes.permissions, badge: 'NEW', visible: checkVisible('permissions', permissions) },
+                { label: 'Usuarios', icon: 'pi pi-user-edit', to: routes.usuarios, badge: 'NEW', visible: true},
+                { label: 'Roles', icon: 'pi pi-sitemap', to: routes.roles, badge: 'NEW', visible: true},
+                { label: 'Vistas', icon: 'pi pi-bars', to: routes.views, badge: 'NEW', visible: true},
+                { label: 'Permisos', icon: 'pi pi-lock', to: routes.permissions, badge: 'NEW', visible: true},
             ]
         },
     ]

@@ -11,7 +11,7 @@
     "start_url": "/",
     "icons": [
         {
-            "src": "layout/images/franz-logo.png",
+            "src": "layout/images/logo.png",
             "sizes": "320x320",
             "type": "image/png"
         }

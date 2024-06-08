@@ -25,7 +25,7 @@ const Dashboard = React.memo(() => {
       subtitle: 'Adminstración de usuarios, accesos, etc.',
       footer: <span><Button label="Ingresa Aquí" icon="pi pi-arrow-right p-button-rounded" className="col-sm-12" onClick={() => router.push(routes.usuarios)} /></span>,
       lottie: <Lottie animationData={client} loop={true} className="col-6 m-auto" />,
-      access: checkVisible('users', permissions)
+      access: true
     },
 
     {
@@ -34,7 +34,7 @@ const Dashboard = React.memo(() => {
       subtitle: 'Adminstración de roles, edición, creación etc.',
       footer: <span><Button label="Ingresa Aquí" icon="pi pi-arrow-right p-button-rounded" className="col-sm-12" onClick={() => router.push(routes.roles)} /></span>,
       lottie: <Lottie animationData={gestion} loop={true} className="col-6 m-auto mb-2" />,
-      access: checkVisible('roles', permissions)
+      access: true
     },
     {
       id: 3,
@@ -42,7 +42,7 @@ const Dashboard = React.memo(() => {
       subtitle: 'Adminstración de vistas, edición, creación etc.',
       footer: <span><Button label="Ingresa Aquí" icon="pi pi-arrow-right p-button-rounded" className="col-sm-12" onClick={() => router.push(routes.views)} /></span>,
       lottie: <Lottie animationData={analisis} loop={true} className="col-6 m-auto mb-2" />,
-      access: checkVisible('views', permissions)
+      access: true
     },
     {
       id: 4,
@@ -50,7 +50,7 @@ const Dashboard = React.memo(() => {
       subtitle: 'Adminstración de permisos, edición, creación etc.',
       footer: <span><Button label="Ingresa Aquí" icon="pi pi-arrow-right p-button-rounded" className="col-sm-12" onClick={() => router.push(routes.permissions)} /></span>,
       lottie: <Lottie animationData={seguridad} loop={true} className="col-6 m-auto mb-2" />,
-      access: checkVisible('permissions', permissions)
+      access: true
     }
   ]
 

@@ -23,7 +23,7 @@ const LoginPage = () => {
     const mensaje = router.query.mensaje || '';
     const containerClassName = classNames('surface-ground flex align-items-center justify-content-center min-h-screen min-w-screen overflow-hidden', { 'p-input-filled': 'filled' }, 'svg__background');
     const [state, setState] = useState({
-        cedula: '',
+        email: '',
         password: '',
     });
 
@@ -43,10 +43,10 @@ const LoginPage = () => {
         e.preventDefault();
         setError('')
 
-        state.cedula = e.target[0].value
+        state.email = e.target[0].value
         state.password = e.target[1].value
 
-        if (!state.cedula || !state.password?.trim()) return setError('Correo y/o contraseña incorrectos')
+        if (!state.email || !state.password?.trim()) return setError('Correo y/o contraseña incorrectos')
 
         setLoading(true);
 
@@ -60,18 +60,7 @@ const LoginPage = () => {
                 }
             })
             .then(data => {
-              const permissionsObject = data.user.permissions.reduce((acc, curr) => {
-                const [key] = Object.keys(curr);
-                acc[key] = curr[key];
-                return acc;
-              }, {});
 
-              if(!permissionsObject.hasOwnProperty('web')) {
-                setError("No tienes permisos necesarios!")
-                return
-              }
-
-              dispatch({ type: 'add', payload: { name: data.user.name + ' ' + data.user.surname, rol: data?.user?.rol?.description, permissions: permissionsObject }})
               setCookie('token', data.authorisation.token)
               router.push(routes.inicio);
             })
@@ -90,13 +79,13 @@ const LoginPage = () => {
                     <div className='ocupar_width__hijo' style={{ borderRadius: '56px', padding: '0.3rem', background: 'linear-gradient(180deg, var(--primary-color) 10%, rgba(33, 150, 243, 0) 30%)' }}>
                         <div className="w-full surface-card py-8 px-5 sm:px-8" style={{ borderRadius: '53px' }}>
                             <div className="text-center">
-                                <img src={`${contextPath}/layout/images/franz-logo.png`} className='mb-2' alt="Logo del Grupo Vierci" style={{marginTop: '-2rem', width: '100%', maxWidth: '150px'}}/>
+                                <img src={`${contextPath}/layout/images/logo.png`} className='mb-2' alt="Logo del Shop" style={{marginTop: '-2rem', width: '100%', maxWidth: '150px'}}/>
                                 <div className="text-900 text-3xl font-medium mb-3">Bienvenido!</div>
                                 <span className="text-600 font-medium">Inicia sesión para continuar</span>
                             </div>
                             <form onSubmit={handleSubmit}>
-                                <label htmlFor="cedula" className="block text-900 text-xl font-medium mb-2">
-                                    Cédula
+                                <label htmlFor="email" className="block text-900 text-xl font-medium mb-2">
+                                    Email
                                 </label>
                                 <div className="p-inputgroup mb-5">
                                     <span className="p-inputgroup-addon">
@@ -104,11 +93,11 @@ const LoginPage = () => {
                                     </span>
                                     <InputText
                                         ref={input}
-                                        inputid="cedula"
-                                        name="cedula"
-                                        defaultValue={state.cedula}
+                                        inputid="email"
+                                        name="email"
+                                        defaultValue={state.email}
                                         className={classNames("w-full md:w-30rem", { 'p-invalid': error === 'La cédula no es válida' })}
-                                        placeholder="Cédula"
+                                        placeholder="Email"
                                         style={{ padding: '1rem' }}
                                         onChange={handleChange}
                                         required
