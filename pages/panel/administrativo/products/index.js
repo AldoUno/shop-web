@@ -397,7 +397,7 @@ const Products = React.memo(() => {
                     onChange={(e) => onInputChange(e, 'name')}
                     required
                     autoFocus
-                    className={classNames({ 'p-invalid': submitted && !item.name })} placeholder="Juan Carlos" />
+                    className={classNames({ 'p-invalid': submitted && !item.name })} placeholder="Red bull" />
                   {submitted && !item.name && <small className="p-invalid p-error">El NOMBRE es requerido.</small>}
                 </div>
                 <div className={classNames({ 'p-input-filled': item.category }, 'field col')}>

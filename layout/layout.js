@@ -127,7 +127,7 @@ const Layout = (props) => {
   return (
     <React.Fragment>
       <Head>
-        <title>Shop | Grupo AJ Vierci</title>
+        <title>Shop | Mery Xmas</title>
         <meta charSet="UTF-8" />
         <meta name="description" content="Sistema de gestión de solicitudes de notas de crédito" />
         <meta name="viewport" content="initial-scale=1, width=device-width" />
