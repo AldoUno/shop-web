@@ -220,7 +220,7 @@ const Products = React.memo(() => {
 
   const saveItem = () => {
     setSubmitted(true)
-    if (!item.view || !item.rol) {
+    if (!item.name || !item.category) {
       return toast.current?.show({ severity: 'warn', summary: 'Alerta!', detail: 'Faltan llenar uno o más campos', life: 3000 });
     }
     if (item.id) {
@@ -373,7 +373,6 @@ const Products = React.memo(() => {
             >             
               <Column field="name" header="Nombre" sortable filter filterField='name' filterPlaceholder="Nombre"></Column>
               <Column field="category.description" header="Categoria" sortable filter filterField='category.description' filterPlaceholder="Categoria" body={categoryBodyTemplate}></Column>
-              <Column field="codproducto" header="CP" sortable filter filterField='codproducto' filterPlaceholder="Cod. producto"></Column>
               <Column field="codbarra" header="CB" sortable filter filterField='codbarra' filterPlaceholder="Cod. barra"></Column>
               <Column field="descripcion" header="Descripcion" sortable filter filterField='descripcion' filterPlaceholder="Descripcion"></Column>
               <Column field="marca" header="Marca" sortable filter filterField='marca' filterPlaceholder="Marca"></Column>
@@ -404,7 +403,7 @@ const Products = React.memo(() => {
                   <label>Categoria</label>
                   <Dropdown
                     value={item.category}
-                    onChange={e => onInputChange(e, 'categoria')}
+                    onChange={e => onInputChange(e, 'category')}
                     options={categories}
                     optionLabel="description"
                     placeholder="Selecciona la categoria"
@@ -415,16 +414,7 @@ const Products = React.memo(() => {
               </div>
 
               <div className="formgrid grid">
-                <div className={classNames({ 'p-input-filled': item.codproducto }, 'field col')}>
-                  <label>Cod. Producto</label>
-                  <InputText
-                    id="codproducto"
-                    value={item.codproducto}
-                    onChange={(e) => onInputChange(e, 'codproducto')}
-                    required
-                    className={classNames({ 'p-invalid': submitted && !item.codproducto })} placeholder="codproduct" />
-                  {submitted && !item.codproducto && <small className="p-invalid p-error">El codigo de producto es requerido.</small>}
-                </div>
+
 
                 <div className={classNames({ 'p-input-filled': item.codbarra }, 'field col')}>
                   <label htmlFor="codbarra">Cod. Barra</label>
