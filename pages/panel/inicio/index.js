@@ -5,6 +5,9 @@ import analisis from "../../../public/lotties/analisis/data.json";
 import gestion from "../../../public/lotties/gestion/data.json";
 import seguridad from "../../../public/lotties/seguridad/seguridad.json";
 import client from "../../../public/lotties/client/client.json";
+import order from "../../../public/lotties/order/data.json";
+import category from "../../../public/lotties/category/data.json";
+import prodcut from "../../../public/lotties/product/data.json";
 import { Button } from 'primereact/button';
 import { useRouter } from 'next/router';
 import Guia from '../../../utils/broadcrumb';
@@ -27,7 +30,6 @@ const Dashboard = React.memo(() => {
       lottie: <Lottie animationData={client} loop={true} className="col-6 m-auto" />,
       access: true
     },
-
     {
       id: 2,
       title: 'Roles',
@@ -51,7 +53,31 @@ const Dashboard = React.memo(() => {
       footer: <span><Button label="Ingresa Aquí" icon="pi pi-arrow-right p-button-rounded" className="col-sm-12" onClick={() => router.push(routes.permissions)} /></span>,
       lottie: <Lottie animationData={seguridad} loop={true} className="col-6 m-auto mb-2" />,
       access: true
-    }
+    },
+    {
+        id: 5,
+        title: 'Productos',
+        subtitle: 'Adminstración de productos, edición, creación etc.',
+        footer: <span><Button label="Ingresa Aquí" icon="pi pi-arrow-right p-button-rounded" className="col-sm-12" onClick={() => router.push(routes.products)} /></span>,
+        lottie: <Lottie animationData={prodcut} loop={true} className="col-6 m-auto mb-2" />,
+        access: true
+      },
+      {
+        id: 6,
+        title: 'Ordenes',
+        subtitle: 'Adminstración de ordenes, edición, creación etc.',
+        footer: <span><Button label="Ingresa Aquí" icon="pi pi-arrow-right p-button-rounded" className="col-sm-12" onClick={() => router.push(routes.orders)} /></span>,
+        lottie: <Lottie animationData={order} loop={true} className="col-6 m-auto mb-2" />,
+        access: true
+      },
+      {
+        id: 6,
+        title: 'Categorias',
+        subtitle: 'Adminstración de categorias, edición, creación etc.',
+        footer: <span><Button label="Ingresa Aquí" icon="pi pi-arrow-right p-button-rounded" className="col-sm-12" onClick={() => router.push(routes.category)} /></span>,
+        lottie: <Lottie animationData={category} loop={true} className="col-6 m-auto mb-2" />,
+        access: true
+      }
   ]
 
   return (
