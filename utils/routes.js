@@ -11,6 +11,9 @@ const routes = {
     usuarios: '/panel/administrativo/usuarios',
     views: '/panel/administrativo/views',
     permissions: '/panel/administrativo/permissions',
+    products: '/panel/administrativo/products',
+    orders: '/panel/administrativo/orders',
+    category: '/panel/administrativo/categories'
 }
 
 export default routes

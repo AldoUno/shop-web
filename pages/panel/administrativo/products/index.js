@@ -1,0 +1,454 @@
+import React, { useEffect, useRef, useState } from 'react';
+import { Button } from 'primereact/button';
+import { Column } from 'primereact/column';
+import { DataTable } from 'primereact/datatable';
+import { Dialog } from 'primereact/dialog';
+import { InputText } from 'primereact/inputtext';
+import { Toast } from 'primereact/toast';
+import { classNames } from 'primereact/utils';
+import { Dropdown } from 'primereact/dropdown';
+import { List, Submit, Edit, Delete } from '../../../../utils/service/fetchData';
+import Guia from '../../../../utils/broadcrumb';
+import routes from '../../../../utils/routes';
+import { messages } from '../../../../utils/messages';
+import { FilterMatchMode } from 'primereact/api';
+import { Tag } from 'primereact/tag';
+import { useSelector } from 'react-redux';
+import { MultiStateCheckbox } from 'primereact/multistatecheckbox';
+import { getSeverity } from '../../../../utils/status';
+import { options, VALIDATE_BUTTON } from '../../../../utils/textFreeze';
+
+const Products = React.memo(() => {
+  let emptyItem = {
+    id: '',
+    name: '',
+    category: '',
+    codproducto:'',
+    codbarra:'',
+    descripcion:'',
+    marca:'',
+    existencia: '',
+    status: '1',
+    precio: '',
+    iva: '',
+    porcen_iva: '',
+    url: ''
+  };
+
+  const [items, setItems] = useState([]);
+  const [itemDialog, setItemDialog] = useState(false);
+  const [deleteItemDialog, setDeleteItemDialog] = useState(false);
+  const [deleteItemsDialog, setDeleteItemsDialog] = useState(false);
+  const [item, setItem] = useState(emptyItem);
+  const [submitted, setSubmitted] = useState(null)
+  const [nuevo, setNuevo] = useState(false);
+  const [loading1, setLoading1] = useState(false);
+  const toast = useRef(null);
+  const dt = useRef(null);
+  const [selectedItems, setSelectedItems] = useState(null);
+  const [categories, setCategories] = useState([])
+
+  const [globalFilterValue, setGlobalFilterValue] = useState('');
+  const [statuses] = useState(['ACTIVO', 'INACTIVO']);
+  const { permissions } = useSelector(state => state.usuario)
+  const controller = new AbortController()
+  const { signal } = controller
+
+  const [filters, setFilters] = useState({
+    global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+    id: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
+    name: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
+    'category.description': { value: null, matchMode: FilterMatchMode.STARTS_WITH },
+    codproducto: { value: '', matchMode: FilterMatchMode.STARTS_WITH },
+    codbarra: { value: '', matchMode: FilterMatchMode.STARTS_WITH },
+    descripcion: { value: '', matchMode: FilterMatchMode.STARTS_WITH },
+    marca: { value: '', matchMode: FilterMatchMode.STARTS_WITH },
+    existencia: { value: '', matchMode: FilterMatchMode.STARTS_WITH },
+    status: { value: '', matchMode: FilterMatchMode.STARTS_WITH },
+    precio: { value: '', matchMode: FilterMatchMode.STARTS_WITH },
+    iva: { value: '', matchMode: FilterMatchMode.STARTS_WITH },
+    porcen_iva: { value: '', matchMode: FilterMatchMode.STARTS_WITH },
+    url: { value: '', matchMode: FilterMatchMode.STARTS_WITH }
+  });
+
+  useEffect(() => {
+    getAllData()
+
+    return () => controller.abort();
+
+  }, []);
+
+  const getAllData = () => {
+    setLoading1(true);
+    Promise.all([
+      List('all-categories', signal),
+      List('all-products', signal),
+    ])
+      .then(responses => Promise.all(responses.map(async response => {
+        if (response.ok) {
+          return response.json()
+        } else {
+          const { msg } = await response.json()
+          throw new Error(msg)
+        }
+      })))
+      .then(data => {
+        setCategories(data[0].data)
+        const newData = data[1].data.map(item => ({
+          ...item,
+          status: item.status === 1 ? 'Activo' : 'Inactivo'
+        }))
+
+        setItems(newData)
+      })
+      .catch(error => {
+        if (error.name !== 'AbortError') {
+          return toast.current?.show({ severity: 'warn', summary: 'Error !', detail: error.message || "Error en el servidor. Contacte a soporte", life: 3000 })
+        }
+      })
+      .finally(() => setLoading1(false))
+  }
+
+  const openNew = () => {
+    setNuevo(true);
+    setItem(emptyItem);
+    setItemDialog(true);
+  };
+
+  const hideDialog = () => {
+    setSubmitted(false)
+    setItemDialog(false);
+  };
+
+  const hideDeleteItemDialog = () => {
+    setDeleteItemDialog(false);
+  };
+
+  const agregarItem = () => {
+    setLoading1(true);
+
+    const item_to_insert = {
+      ...item,
+      ['category_id']: item.category.id,
+    }
+
+    delete item_to_insert.category
+
+    Submit(item_to_insert, 'create-product')
+      .then(async response => {
+        if (response.ok) {
+          toast.current?.show(messages.mensajeExitosoSubmit)
+          return response.json()
+        } else {
+          const { msg } = await response.json()
+          throw new Error(msg)
+        }
+      })
+      .then((data) => {
+        const newData = {
+          ...item,
+          ...data.data,
+          ['status']: data.data?.status === 1 ? 'Activo' : 'Inactivo'
+        }
+        setItems([...items, newData])
+      })
+      .catch((error) => {
+        toast.current?.show({ severity: 'warn', summary: 'Error !', detail: error.message || "Error en el servidor. Contacte a soporte", life: 3000 })
+      })
+      .finally(() => {
+        setItem(emptyItem)
+        setLoading1(false)
+      })
+  };
+  const findIndexById = (id) => {
+    let index = -1;
+    for (let i = 0; i < items.length; i++) {
+      if (items[i].id === id) {
+        index = i;
+        break;
+      }
+    }
+
+    return index;
+  };
+  const editarItem = () => {
+    setLoading1(true);
+    item.status = item?.status === 'Activo' ? 1 : 0
+
+    const index = findIndexById(item.id);
+    Edit(item, 'update-product', item.id)
+      .then(async response => {
+        if (response.status === 200) {
+          toast.current?.show(messages.mensajeExitosoEdit)
+          return response.json()
+        } else {
+          const { msg } = await response.json()
+          throw new Error(msg)
+        }
+      })
+      .then(() => {
+        item.status = item?.status === 1 ? 'Acitvo' : 'Inactivo'
+        items[index] = item
+      })
+      .catch((error) => toast.current?.show({ severity: 'warn', summary: 'Error !', detail: error.message || "Error en el servidor. Contacte a soporte", life: 3000 }))
+      .finally(() => {
+        setItem(emptyItem)
+        setLoading1(false)
+      })
+  };
+
+  const eliminarItem = () => {
+    setLoading1(true);
+    const index = findIndexById(item.id);
+    Delete(item.id, 'delete-product')
+      .then(async response => {
+        if (response.ok) {
+          toast.current?.show(messages.mensajeExitosoDelete)
+          return response.json()
+        } else {
+          const { msg } = await response.json()
+          throw new Error(msg)
+        }
+      })
+      .then(() => items.splice(index, 1))
+      .catch((error) => toast.current?.show({ severity: 'warn', summary: 'Error !', detail: error.message || "Error en el servidor. Contacte a soporte", life: 3000 }))
+      .finally(() => {
+        setItem(emptyItem)
+        setLoading1(false)
+      })
+  };
+
+  const saveItem = () => {
+    setSubmitted(true)
+    if (!item.view || !item.rol) {
+      return toast.current?.show({ severity: 'warn', summary: 'Alerta!', detail: 'Faltan llenar uno o más campos', life: 3000 });
+    }
+    if (item.id) {
+      editarItem();
+    } else {
+      agregarItem();
+    }
+
+    setSubmitted(false)
+    setItemDialog(false);
+  };
+
+  const editItem = (item) => {
+    setItem({ ...item });
+    setNuevo(false)
+    setItemDialog(true);
+  };
+
+  const confirmDeleteItem = (item) => {
+    setItem(item);
+    setDeleteItemDialog(true);
+  };
+
+  const deleteItem = () => {
+    eliminarItem();
+    setDeleteItemDialog(false);
+    setItem(emptyItem);
+  };
+
+  const onInputChange = (e, name) => {
+    let val = (e.target && e.target.value) || '1';
+    let _item = { ...item };
+    _item[`${name}`] = val;
+
+    setItem(_item);
+  };
+
+  const onGlobalFilterChange = (e) => {
+    const value = e.target.value;
+    let _filters = { ...filters };
+
+    _filters['global'].value = value;
+
+    setFilters(_filters);
+    setGlobalFilterValue(value);
+  };
+
+  const deleteSelectedItems = () => {
+    let _items = items.filter((val) => !selectedItems.includes(val));
+    setItems(_items);
+    setDeleteItemsDialog(false);
+    setSelectedItems(null);
+    toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Items eliminados', life: 3000 });
+  };
+
+  const hideDeleteItemsDialog = () => {
+    setDeleteItemsDialog(false);
+  };
+
+  const statusBodyTemplate = (rowData) => {
+    const showStatus = rowData.status
+    return (
+      <>
+        <span className="p-column-title">Estado</span>
+        <span className={`usuario-badge status-${showStatus.toLowerCase()}`}>{showStatus}</span>
+      </>
+    );
+  };
+
+  const statusItemTemplate = (option) => {
+    return (
+      <Tag value={option} severity={getSeverity(option)} />
+    )
+  }
+
+  const statusRowFilterTemplate = (options) => <Dropdown value={options.value} options={statuses} onChange={(e) => options.filterApplyCallback(e.value)} itemTemplate={statusItemTemplate} placeholder="Estado" className="p-column-filter" showClear style={{ minWidth: '10em' }} />
+
+
+  const categoryBodyTemplate = (rowData) => rowData?.category?.description
+
+  const actionBodyTemplate = (rowData) => {
+    return (
+      <>
+        <Button icon="pi pi-pencil" className="p-button-rounded p-button-success mr-2" onClick={() => editItem(rowData)} tooltip="Editar" tooltipOptions={{ position: 'bottom' }} />
+        <Button icon="pi pi-trash" className="p-button-rounded p-button-danger" onClick={() => confirmDeleteItem(rowData)} tooltip="Eliminar" tooltipOptions={{ position: 'bottom' }} />
+      </>
+    );
+  };
+
+  const header = (
+    <div className="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
+      <h5 className="m-0">Productos</h5>
+
+      <div className="flex flex-wrap mt-2 md:mt-0">
+        <Button label="Nuevo" icon="pi pi-plus" className="p-button-success mr-2" onClick={openNew} />
+        <Button label="Actualizar" icon="pi pi-sync" className="mr-2" onClick={getAllData} />
+        <span className="block mt-2 md:mt-0 p-input-icon-left">
+          <i className="pi pi-search" />
+          <InputText value={globalFilterValue} onChange={onGlobalFilterChange} placeholder="Búsqueda global" />
+        </span>
+      </div>
+    </div>
+  );
+
+  const itemDialogFooter = (
+    <>
+      <Button label="Cancelar" icon="pi pi-times" className="p-button-text" onClick={hideDialog} />
+      <Button label="Guardar" icon="pi pi-check" className="p-button-text" onClick={saveItem} />
+    </>
+  );
+  const deleteItemDialogFooter = (
+    <>
+      <Button label="No" icon="pi pi-times" className="p-button-text" type="submit" onClick={hideDeleteItemDialog} />
+      <Button label="Si" icon="pi pi-check" className="p-button-text" onClick={deleteItem} />
+    </>
+  );
+  const deleteItemsDialogFooter = (
+    <>
+      <Button label="No" icon="pi pi-times" className="p-button-text" onClick={hideDeleteItemsDialog} />
+      <Button label="Si" icon="pi pi-check" className="p-button-text" onClick={deleteSelectedItems} />
+    </>
+  )
+
+  let broadcrumbData = { label: 'Productos', icon: 'pi pi-fw pi-eye', url: routes.products };
+  return (
+    <>
+      <Guia ruta={broadcrumbData} />
+      <div className="grid crud-demo">
+        <div className="col-12">
+          <div className="card">
+            <Toast ref={toast} />
+            <DataTable
+              ref={dt}
+              value={items}
+              dataKey="id"
+              paginator
+              loading={loading1}
+              rows={10}
+              rowsPerPageOptions={[5, 10, 25]}
+              className="datatable-responsive alternar"
+              paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
+              currentPageReportTemplate="Mostrando del {first} al {last} de {totalRecords} items"
+              filters={filters}
+              filterDisplay="row"
+              globalFilterFields={['id', 'category.description']}
+              emptyMessage="No se encontraron productos."
+              header={header}
+              size='small'
+              removableSort
+            >
+              <Column className='column__id' field="id" header="Código" sortable filter filterField='id' filterPlaceholder="Cód"></Column>
+              <Column field="category.description" header="Categoria" sortable filter filterField='category.description' filterPlaceholder="Categoria" body={categoryBodyTemplate}></Column>
+              <Column field="status" header="Estado" showFilterMenu={false} body={statusBodyTemplate} filter filterElement={statusRowFilterTemplate}></Column>
+              <Column field="acciones" header="Acciones" body={actionBodyTemplate}></Column>
+            </DataTable>
+            <Dialog visible={itemDialog} style={{ width: '450px' }} maximizable header={nuevo ? 'Nuevo Permiso' : 'Editar Permiso'} modal className="p-fluid" footer={itemDialogFooter} onHide={hideDialog}>
+              <div className="formgrid grid">
+                <div className={classNames({ 'p-input-filled': item.rol }, 'field col')}>
+                  <label>Categoria</label>
+                  <Dropdown
+                    value={item.rol}
+                    onChange={(e) => onInputChange(e, 'category')}
+                    required
+                    options={categories}
+                    optionLabel="description"
+                    className={classNames({ 'p-invalid': submitted && !item.category })}
+                    placeholder="Selecciona la categoria"
+                  />
+                  {submitted && !item.rol && <small className="p-invalid p-error">La categoria es requerida.</small>}
+                </div>
+              </div>
+
+              <div className='field'>
+                <label htmlFor="permisos">Permisos</label>
+                <div className="flex align-items-center">
+                  <div className='col-6'>
+                    <MultiStateCheckbox value={item.read} onChange={(e) => onInputChange(e, 'read')} options={options} optionValue="value" />
+                    <label htmlFor='read' className="ml-2 mr-4">Consultar</label>
+                  </div>
+                  {item.read == VALIDATE_BUTTON.enabledPermision ? <span style={{ color: '#22C55E' }} >Habilitado</span> : <span style={{ color: '#F59E0B' }}>Deshabilitado</span>}
+                </div>
+                <div className="flex align-items-center">
+                  <div className='col-6'>
+                    <MultiStateCheckbox value={item.write} onChange={(e) => onInputChange(e, 'write')} options={options} optionValue="value" />
+                    <label htmlFor='write' className="ml-2 mr-4">Insertar</label>
+                  </div>
+                  {item.write == VALIDATE_BUTTON.enabledPermision ? <span style={{ color: '#22C55E' }} >Habilitado</span> : <span style={{ color: '#F59E0B' }}>Deshabilitado</span>}
+                </div>
+                <div className="flex align-items-center">
+                  <div className='col-6'>
+                    <MultiStateCheckbox value={item.update} onChange={(e) => onInputChange(e, 'update')} options={options} optionValue="value" />
+                    <label htmlFor='update' className="ml-2 mr-4">Actualizar</label>
+                  </div>
+                  {item.update == VALIDATE_BUTTON.enabledPermision ? <span style={{ color: '#22C55E' }} >Habilitado</span> : <span style={{ color: '#F59E0B' }}>Deshabilitado</span>}
+                </div>
+                <div className="flex align-items-center">
+                  <div className='col-6'>
+                    <MultiStateCheckbox value={item.delete} onChange={(e) => onInputChange(e, 'delete')} options={options} optionValue="value" />
+                    <label htmlFor='delete' className="ml-2 mr-4">Eliminar</label>
+                  </div>
+                  {item.delete == VALIDATE_BUTTON.enabledPermision ? <span style={{ color: '#22C55E' }} >Habilitado</span> : <span style={{ color: '#F59E0B' }}>Deshabilitado</span>}
+
+                </div>
+              </div>
+            </Dialog>
+
+            <Dialog visible={deleteItemDialog} style={{ width: '450px' }} header="Confirmar" modal footer={deleteItemDialogFooter} onHide={hideDeleteItemDialog}>
+              <div className="flex align-items-center justify-content-center">
+                <i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: '2rem' }} />
+                {item && (
+                  <span>
+                    Estás seguro que quieres eliminar el Permiso Nº <b>{item.id}</b>?
+                  </span>
+                )}
+              </div>
+            </Dialog>
+
+            <Dialog visible={deleteItemsDialog} style={{ width: '450px' }} header="Confirm" modal footer={deleteItemsDialogFooter} onHide={hideDeleteItemsDialog}>
+              <div className="flex align-items-center justify-content-center">
+                <i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: '2rem' }} />
+                {item && <span>Estás seguro que quieres eliminar los items seleccionados?</span>}
+              </div>
+            </Dialog>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+});
+
+export default Products;
