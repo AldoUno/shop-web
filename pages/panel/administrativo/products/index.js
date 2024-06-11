@@ -365,67 +365,180 @@ const Products = React.memo(() => {
               currentPageReportTemplate="Mostrando del {first} al {last} de {totalRecords} items"
               filters={filters}
               filterDisplay="row"
-              globalFilterFields={['id', 'category.description']}
+              globalFilterFields={['name', 'category.description', 'codproducto', 'codbarra', 'descripcion', 'marca', 'existencia', 'status', 'precio', 'iva', 'porcen_iva', 'url']}
               emptyMessage="No se encontraron productos."
               header={header}
               size='small'
               removableSort
-            >
-              <Column className='column__id' field="id" header="Código" sortable filter filterField='id' filterPlaceholder="Cód"></Column>
+            >             
+              <Column field="name" header="Nombre" sortable filter filterField='name' filterPlaceholder="Nombre"></Column>
               <Column field="category.description" header="Categoria" sortable filter filterField='category.description' filterPlaceholder="Categoria" body={categoryBodyTemplate}></Column>
+              <Column field="codproducto" header="CP" sortable filter filterField='codproducto' filterPlaceholder="Cod. producto"></Column>
+              <Column field="codbarra" header="CB" sortable filter filterField='codbarra' filterPlaceholder="Cod. barra"></Column>
+              <Column field="descripcion" header="Descripcion" sortable filter filterField='descripcion' filterPlaceholder="Descripcion"></Column>
+              <Column field="marca" header="Marca" sortable filter filterField='marca' filterPlaceholder="Marca"></Column>
+              <Column field="existencia" header="Stock" sortable filter filterField='existencia' filterPlaceholder="Stock"></Column>
               <Column field="status" header="Estado" showFilterMenu={false} body={statusBodyTemplate} filter filterElement={statusRowFilterTemplate}></Column>
+              <Column field="precio" header="Precio" sortable filter filterField='precio' filterPlaceholder="Precio"></Column>
+              <Column field="iva" header="IVA" sortable filter filterField='iva' filterPlaceholder="Iva"></Column>
+              <Column field="porcen_iva" header="%IVA" sortable filter filterField='porcen_iva' filterPlaceholder="%"></Column>
+              <Column field="url" header="URL" sortable filter filterField='url' filterPlaceholder="url"></Column>
               <Column field="acciones" header="Acciones" body={actionBodyTemplate}></Column>
             </DataTable>
-            <Dialog visible={itemDialog} style={{ width: '450px' }} maximizable header={nuevo ? 'Nuevo Permiso' : 'Editar Permiso'} modal className="p-fluid" footer={itemDialogFooter} onHide={hideDialog}>
+
+            <Dialog draggable={false} resizable={false} maximizable visible={itemDialog} style={{ width: '600px' }} header={nuevo ? 'Nuevo Producto' : 'Editar Producto'} modal className="p-fluid" footer={itemDialogFooter} onHide={hideDialog}>
               <div className="formgrid grid">
-                <div className={classNames({ 'p-input-filled': item.rol }, 'field col')}>
+
+                <div className={classNames({ 'p-input-filled': item.name }, 'field col')}>
+                  <label htmlFor="name">Nombre(s)</label>
+                  <InputText
+                    id="name"
+                    value={item.name}
+                    onChange={(e) => onInputChange(e, 'name')}
+                    required
+                    autoFocus
+                    className={classNames({ 'p-invalid': submitted && !item.name })} placeholder="Juan Carlos" />
+                  {submitted && !item.name && <small className="p-invalid p-error">El NOMBRE es requerido.</small>}
+                </div>
+                <div className={classNames({ 'p-input-filled': item.category }, 'field col')}>
                   <label>Categoria</label>
                   <Dropdown
-                    value={item.rol}
-                    onChange={(e) => onInputChange(e, 'category')}
-                    required
+                    value={item.category}
+                    onChange={e => onInputChange(e, 'categoria')}
                     options={categories}
                     optionLabel="description"
-                    className={classNames({ 'p-invalid': submitted && !item.category })}
                     placeholder="Selecciona la categoria"
+                    className={classNames({ 'p-invalid': submitted && !item.category })}
                   />
-                  {submitted && !item.rol && <small className="p-invalid p-error">La categoria es requerida.</small>}
+                  {submitted && !item.category && <small className="p-invalid p-error">La categoria es requerida.</small>}
                 </div>
               </div>
 
-              <div className='field'>
-                <label htmlFor="permisos">Permisos</label>
-                <div className="flex align-items-center">
-                  <div className='col-6'>
-                    <MultiStateCheckbox value={item.read} onChange={(e) => onInputChange(e, 'read')} options={options} optionValue="value" />
-                    <label htmlFor='read' className="ml-2 mr-4">Consultar</label>
-                  </div>
-                  {item.read == VALIDATE_BUTTON.enabledPermision ? <span style={{ color: '#22C55E' }} >Habilitado</span> : <span style={{ color: '#F59E0B' }}>Deshabilitado</span>}
+              <div className="formgrid grid">
+                <div className={classNames({ 'p-input-filled': item.codproducto }, 'field col')}>
+                  <label>Cod. Producto</label>
+                  <InputText
+                    id="codproducto"
+                    value={item.codproducto}
+                    onChange={(e) => onInputChange(e, 'codproducto')}
+                    required
+                    className={classNames({ 'p-invalid': submitted && !item.codproducto })} placeholder="codproduct" />
+                  {submitted && !item.codproducto && <small className="p-invalid p-error">El codigo de producto es requerido.</small>}
                 </div>
-                <div className="flex align-items-center">
-                  <div className='col-6'>
-                    <MultiStateCheckbox value={item.write} onChange={(e) => onInputChange(e, 'write')} options={options} optionValue="value" />
-                    <label htmlFor='write' className="ml-2 mr-4">Insertar</label>
-                  </div>
-                  {item.write == VALIDATE_BUTTON.enabledPermision ? <span style={{ color: '#22C55E' }} >Habilitado</span> : <span style={{ color: '#F59E0B' }}>Deshabilitado</span>}
-                </div>
-                <div className="flex align-items-center">
-                  <div className='col-6'>
-                    <MultiStateCheckbox value={item.update} onChange={(e) => onInputChange(e, 'update')} options={options} optionValue="value" />
-                    <label htmlFor='update' className="ml-2 mr-4">Actualizar</label>
-                  </div>
-                  {item.update == VALIDATE_BUTTON.enabledPermision ? <span style={{ color: '#22C55E' }} >Habilitado</span> : <span style={{ color: '#F59E0B' }}>Deshabilitado</span>}
-                </div>
-                <div className="flex align-items-center">
-                  <div className='col-6'>
-                    <MultiStateCheckbox value={item.delete} onChange={(e) => onInputChange(e, 'delete')} options={options} optionValue="value" />
-                    <label htmlFor='delete' className="ml-2 mr-4">Eliminar</label>
-                  </div>
-                  {item.delete == VALIDATE_BUTTON.enabledPermision ? <span style={{ color: '#22C55E' }} >Habilitado</span> : <span style={{ color: '#F59E0B' }}>Deshabilitado</span>}
 
+                <div className={classNames({ 'p-input-filled': item.codbarra }, 'field col')}>
+                  <label htmlFor="codbarra">Cod. Barra</label>
+                  <InputText
+                    id="codbarra"
+                    value={item.codbarra}
+                    onChange={(e) => onInputChange(e, 'codbarra')}
+                    required                    
+                    className={classNames({ 'p-invalid': submitted && !item.codbarra })} placeholder="codbarra" />
+                  {submitted && !item.codbarra && <small className="p-invalid p-error">El codbarra es requerido.</small>}
                 </div>
+              </div>
+
+              <div className="formgrid grid">
+                <div className={classNames({ 'p-input-filled': item.descripcion }, 'field col')}>
+                  <label>Descripción</label>
+                  <InputText
+                    id="descripcion"
+                    value={item.descripcion}
+                    onChange={(e) => onInputChange(e, 'descripcion')}
+                    placeholder="descripcion"
+                    className={classNames({ 'p-invalid': submitted && !item.descripcion })} />
+                  {submitted && !item.descripcion && <small className="p-invalid p-error">La descripcion es requerido.</small>}
+                </div>
+                <div className={classNames({ 'p-input-filled': item.marca }, 'field col')}>
+                  <label>Marca</label>
+                  <InputText
+                    id="marca"
+                    value={item.marca}
+                    onChange={(e) => onInputChange(e, 'marca')}
+                    placeholder="marca"
+                    className={classNames({ 'p-invalid': submitted && !item.marca })} />
+                  {submitted && !item.marca && <small className="p-invalid p-error">La marca es requerido.</small>}
+                </div>
+              </div>
+
+              <div className="formgrid grid">
+              <div className={classNames({ 'p-input-filled': item.existencia }, 'field col')}>
+                  <label>Stock</label>
+                  <InputText
+                    id="existencia"
+                    value={item.existencia}
+                    onChange={(e) => onInputChange(e, 'existencia')}
+                    placeholder={999}
+                    className={classNames({ 'p-invalid': submitted && !item.existencia })} />
+                  {submitted && !item.existencia && <small className="p-invalid p-error">El stock es requerido.</small>}
+                </div>
+                <div className={classNames({ 'p-input-filled': item.precio }, 'field col')}>
+                  <label>Precio</label>
+                  <InputText
+                    id="precio"
+                    value={item.precio}
+                    onChange={(e) => onInputChange(e, 'precio')}
+                    placeholder="precio"
+                    className={classNames({ 'p-invalid': submitted && !item.precio })} />
+                  {submitted && !item.precio && <small className="p-invalid p-error">El precio es requerido.</small>}
+                </div>
+              </div>
+
+              <div className="formgrid grid">
+              <div className={classNames({ 'p-input-filled': item.iva }, 'field col')}>
+                  <label>I.V.A.</label>
+                  <InputText
+                    id="iva"
+                    value={item.iva}
+                    onChange={(e) => onInputChange(e, 'iva')}
+                    placeholder={999}
+                    className={classNames({ 'p-invalid': submitted && !item.iva })} />
+                  {submitted && !item.iva && <small className="p-invalid p-error">El IVA es requerido.</small>}
+                </div>
+                <div className={classNames({ 'p-input-filled': item.porcen_iva }, 'field col')}>
+                  <label>% I.V.A.</label>
+                  <InputText
+                    id="porcen_iva"
+                    value={item.porcen_iva}
+                    onChange={(e) => onInputChange(e, 'porcen_iva')}
+                    placeholder="10%"
+                    className={classNames({ 'p-invalid': submitted && !item.porcen_iva })} />
+                  {submitted && !item.porcen_iva && <small className="p-invalid p-error">El IVA es requerido.</small>}
+                </div>
+              </div>
+
+              <div className="formgrid grid">
+                <div className={classNames({ 'p-input-filled': item.url }, 'field col')}>
+                  <label>Imagen</label>
+                  <InputText
+                    id="url"
+                    value={item.url}
+                    onChange={(e) => onInputChange(e, 'url')}
+                    placeholder="Imagen"
+                    className={classNames({ 'p-invalid': submitted && !item.url })} />
+                  {submitted && !item.url && <small className="p-invalid p-error">El stock es requerido.</small>}
+                </div>
+
+                {
+                  item.id && (
+                    <div className={classNames({ 'p-input-filled': item.status }, 'field col-12 md:col-6')}>
+                      <label htmlFor="estado">Estado</label>
+                      <Dropdown
+                        value={item.status}
+                        onChange={e => onInputChange(e, 'status')}
+                        options={[
+                          { status: 'Activo', value: 'Activo' },
+                          { status: 'Inactivo', value: 'Acitvo' }
+                        ]}
+                        optionLabel="status"
+                        placeholder="Selecciona el status"
+                      />
+                    </div>
+                  )
+                }
               </div>
             </Dialog>
+
 
             <Dialog visible={deleteItemDialog} style={{ width: '450px' }} header="Confirmar" modal footer={deleteItemDialogFooter} onHide={hideDeleteItemDialog}>
               <div className="flex align-items-center justify-content-center">
