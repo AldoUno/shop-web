@@ -22,8 +22,7 @@ const Products = React.memo(() => {
   let emptyItem = {
     id: '',
     name: '',
-    category: '',
-    codproducto:'',
+    category: '',  
     codbarra:'',
     descripcion:'',
     marca:'',
@@ -59,7 +58,6 @@ const Products = React.memo(() => {
     id: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
     name: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
     'category.description': { value: null, matchMode: FilterMatchMode.STARTS_WITH },
-    codproducto: { value: '', matchMode: FilterMatchMode.STARTS_WITH },
     codbarra: { value: '', matchMode: FilterMatchMode.STARTS_WITH },
     descripcion: { value: '', matchMode: FilterMatchMode.STARTS_WITH },
     marca: { value: '', matchMode: FilterMatchMode.STARTS_WITH },
@@ -96,7 +94,7 @@ const Products = React.memo(() => {
         setCategories(data[0].data)
         const newData = data[1].data.map(item => ({
           ...item,
-          status: item.status === 1 ? 'Activo' : 'Inactivo'
+          status: item.status == 1 ? 'Activo' : 'Inactivo'
         }))
 
         setItems(newData)
@@ -148,7 +146,7 @@ const Products = React.memo(() => {
         const newData = {
           ...item,
           ...data.data,
-          ['status']: data.data?.status === 1 ? 'Activo' : 'Inactivo'
+          ['status']: data.data?.status == 1 ? 'Activo' : 'Inactivo'
         }
         setItems([...items, newData])
       })
@@ -171,14 +169,15 @@ const Products = React.memo(() => {
 
     return index;
   };
+
   const editarItem = () => {
     setLoading1(true);
-    item.status = item?.status === 'Activo' ? 1 : 0
+    item.status = item?.status == 'Activo' ? 1 : 0
 
     const index = findIndexById(item.id);
     Edit(item, 'update-product', item.id)
       .then(async response => {
-        if (response.status === 200) {
+        if (response.status == 200) {
           toast.current?.show(messages.mensajeExitosoEdit)
           return response.json()
         } else {
@@ -187,7 +186,7 @@ const Products = React.memo(() => {
         }
       })
       .then(() => {
-        item.status = item?.status === 1 ? 'Acitvo' : 'Inactivo'
+        item.status = item?.status == 1 ? 'Acitvo' : 'Inactivo'
         items[index] = item
       })
       .catch((error) => toast.current?.show({ severity: 'warn', summary: 'Error !', detail: error.message || "Error en el servidor. Contacte a soporte", life: 3000 }))
@@ -251,7 +250,7 @@ const Products = React.memo(() => {
   };
 
   const onInputChange = (e, name) => {
-    let val = (e.target && e.target.value) || '1';
+    let val = (e.target && e.target.value) || '';
     let _item = { ...item };
     _item[`${name}`] = val;
 
@@ -399,6 +398,7 @@ const Products = React.memo(() => {
                     className={classNames({ 'p-invalid': submitted && !item.name })} placeholder="Red bull" />
                   {submitted && !item.name && <small className="p-invalid p-error">El NOMBRE es requerido.</small>}
                 </div>
+
                 <div className={classNames({ 'p-input-filled': item.category }, 'field col')}>
                   <label>Categoria</label>
                   <Dropdown
