@@ -1,0 +1,7 @@
+export const STATUS_TYPES = {
+  BORRADOR: 1,
+  ACTIVO: 2,
+  PREPARACION: 3,
+  CONFIRMADO: 4,
+  MIGRADO: 5,
+}

@@ -29,6 +29,51 @@ const Layout = (props) => {
   const state = useSelector(state => state)
   const dispatch = useDispatch()
 
+
+  useEffect(() => {
+    const controller = new AbortController();
+    const { signal } = controller;
+
+    dispatch({ type: 'show' });
+
+    Promise.all([
+      Refresh(signal),
+    ])
+      .then(([refreshResponse]) => {
+        if (refreshResponse.status !== 200) {
+          throw new Error('No se pudo obtener los datos del usuario. Intentalo de nuevo.');
+        }
+
+        return Promise.all([
+          refreshResponse.json(),
+        ]);
+      })
+      .then(([data]) => {
+        const permissionsObject = data.user.permissions.reduce((acc, curr) => {
+          const [key] = Object.keys(curr);
+          acc[key] = curr[key];
+          return acc;
+        }, {});
+
+        if(!permissionsObject.hasOwnProperty('web')) {
+          deleteCookie('token')
+          router.push(routes.login)
+          return
+        }
+
+        dispatch({ type: 'add', payload: { name: data.user.name + ' ' + data.user.surname, rol: data?.user?.rol?.description, permissions: permissionsObject } })
+      })
+      .catch(error => {
+        if (error.name !== 'AbortError') {
+          toast.current.show(messages.mensajeErrorServer);
+        }
+      })
+      .finally(() => dispatch({ type: 'hide' }));
+
+    return () => controller.abort();
+  }, []);
+
+
   useEffect(() => {
     if (state.progreso !== '0px') return setBlockUi(true)
 
@@ -135,7 +180,7 @@ const Layout = (props) => {
 
         <link rel="manifest" href={`${contextPath}/manifest.json`} />
         <meta name="theme-color" content="#90cdf4" />
-        <link rel="apple-touch-icon" href={`${contextPath}/layout/images/fundacion.png`} />
+        <link rel="apple-touch-icon" href={`${contextPath}/layout/images/logo.png`} />
         <meta name="apple-mobile-web-app-status-bar" content="#90cdf4" />
       </Head>
       <BlockUI blocked={blockUi}>

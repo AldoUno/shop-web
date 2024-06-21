@@ -15,14 +15,17 @@ const AppMenu = () => {
             items: [ { label: 'Inicio', icon: 'pi pi-fw pi-home', to: routes.inicio } ],
         },
         {
+            label: 'Gestión',
+            items: [ { label: 'Órdenes', icon: 'pi pi-shopping-cart', to: routes.orders, visible: checkVisible('orders', permissions) } ],
+        },  
+        {
             label: 'Seguridad',
             items: [
                 { label: 'Usuarios', icon: 'pi pi-user-edit', to: routes.usuarios, badge: 'NEW', visible: true},
                 { label: 'Roles', icon: 'pi pi-sitemap', to: routes.roles, badge: 'NEW', visible: true},
                 { label: 'Vistas', icon: 'pi pi-bars', to: routes.views, badge: 'NEW', visible: true},
                 { label: 'Permisos', icon: 'pi pi-lock', to: routes.permissions, badge: 'NEW', visible: true},
-                { label: 'Productos', icon: 'pi pi-qrcode', to: routes.products, badge: 'NEW', visible: true},
-                { label: 'Ordenes', icon: 'pi pi-box', to: routes.orders, badge: 'NEW', visible: true},
+                { label: 'Productos', icon: 'pi pi-qrcode', to: routes.products, badge: 'NEW', visible: true},                
                 { label: 'Categorias', icon: 'pi pi-tag', to: routes.category, badge: 'NEW', visible: true},
             ]
         },
