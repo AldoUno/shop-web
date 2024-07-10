@@ -14,7 +14,7 @@ export const LoginInit = async (body) => {
 };
 
 export const SendEmailToResetPassword = async (body) => {
-    return fetch(`${API_ENDPOIND}/${API_VERSION}/auth/recover`, {
+    return fetch(`${API_ENDPOIND}/recover`, {
         method: 'POST',
         body: JSON.stringify(body),
         headers: {
@@ -25,7 +25,7 @@ export const SendEmailToResetPassword = async (body) => {
 };
 
 export const ResetPassword = async (body, token) => {
-    return fetch(`${API_ENDPOIND}/${API_VERSION}/auth/reset/${token}`, {
+    return fetch(`${API_ENDPOIND}/reset`, {
         method: 'POST',
         body: JSON.stringify(body),
         headers: {

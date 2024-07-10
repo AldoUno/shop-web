@@ -9,11 +9,11 @@ import { InputText } from 'primereact/inputtext';
 import { Dropdown } from 'primereact/dropdown';
 import { Toast } from 'primereact/toast';
 import { classNames } from 'primereact/utils';
-import { List, Get, Edit, Delete, Submit } from '../../../../utils/service/fetchData';
 import { FilterMatchMode } from 'primereact/api';
 import { Tag } from 'primereact/tag';
 import { Divider } from "primereact/divider";
 import { PDFDownloadLink } from '@react-pdf/renderer';
+import { List, Get, Edit, Delete, Submit } from '../../../../utils/service/fetchData';
 import { addLocale } from 'primereact/api';
 import { Calendar } from 'primereact/calendar';
 import { getCookie } from 'cookies-next';
@@ -22,7 +22,6 @@ import { Row } from 'primereact/row';
 import { STATUS_TYPES } from '../../../../constants/STATUS_TYPES';
 import { getSeverityGestion } from '../../../../constants/GET_SEVERITY';
 import { ORDER_ACTIONS } from '../../../../constants/ORDER_ACTIONS';
-
 
 const Orders = () => {
   const initialValues = {
@@ -44,7 +43,6 @@ const Orders = () => {
   const [messageConfirm, setMessageConfirm] = useState('')
   const [dates, setDates] = useState('')
   const calendar = useRef(null)
-
 
   // LAZY IMPLEMENTATION
   const [totalRecords, setTotalRecords] = useState(0);
@@ -74,17 +72,16 @@ const Orders = () => {
 
   const [statuses] = useState([
     { label: 'Preparacion' },
-    { label: 'En camino' },
+    { label: 'Enviado' },
     { label: 'Resivido' },
   ]);
 
 
-  const controller = new AbortController()
-  const { signal } = controller
-
+  const controller = new AbortController();
+  const { signal } = controller;
 
   useEffect(() => {
-    let timerId
+    let timerId;
     const loadLazyData = () => {
       let params = { lazyEvent: JSON.stringify(lazyState) };
 
@@ -94,18 +91,18 @@ const Orders = () => {
           .join('&')
         : '';
 
-      getFilterOrders(queryParams)
+      getFilterOrders(queryParams);
     };
 
     timerId = setTimeout(loadLazyData, 500);
-    setSelectedItems([])
+    setSelectedItems([]);
 
-    return () => clearTimeout(timerId)
+    return () => clearTimeout(timerId);
   }, [lazyState]);
 
   useEffect(() => {
     if (dates?.length > 1 && dates[0] && dates[1]) {
-      setlazyState({
+      setLazyState({
         ...lazyState,
         filters: {
           ...lazyState.filters,
@@ -113,12 +110,11 @@ const Orders = () => {
             value: dates
           }
         }
-      })
-      setSelectedItems([])
-      
-      calendar?.current?.hide()
+      });
+      setSelectedItems([]);
+      calendar?.current?.hide();
     } else if (dates === null) {
-      setlazyState({
+      setLazyState({
         ...lazyState,
         filters: {
           ...lazyState.filters,
@@ -126,49 +122,47 @@ const Orders = () => {
             value: []
           }
         }
-      })
+      });
 
-      setSelectedItems([])
-
+      setSelectedItems([]);
     }
-  }, [dates])
-
+  }, [dates]);
 
   const getFilterOrders = (queryParams) => {
-    setLoading1(true)
+    setLoading1(true);
     List(`filterOrders?${queryParams}`, signal)
       .then(async response => {
         if (response.status === 200) {
-          return response.json()
+          return response.json();
         } else {
-          const { msg } = await response.json()
-          throw new Error(msg)
+          const { msg } = await response.json();
+          throw new Error(msg);
         }
       })
       .then(data => {
         const new_data = data.data.map(item => ({
           ...item,
-        }))
-        setItems(new_data)
-        setTotalRecords(data.totalRecords)
+        }));
+        setItems(new_data);
+        setTotalRecords(data.totalRecords);
       })
       .catch((error) => {
         if (error.name !== 'AbortError') {
-          toast.current?.show({ severity: 'warn', summary: 'Error !', detail: error.message || "Error en el servidor. Contacte a soporte", life: 3000 })
+          toast.current?.show({ severity: 'warn', summary: 'Error !', detail: error.message || "Error en el servidor. Contacte a soporte", life: 3000 });
         }
-        setItems([])
+        setItems([]);
       })
       .finally(() => {
-        setLoading1(false)
-      })
-  }
+        setLoading1(false);
+      });
+  };
 
   const onPage = (event) => {
-    setlazyState(event);
+    setLazyState(event);
   };
 
   const onSort = (event) => {
-    setlazyState(event);
+    setLazyState(event);
   };
 
   const onFilter = (event) => {
@@ -176,8 +170,7 @@ const Orders = () => {
     setlazyState(event);
   };
 
-
-  const statusItemTemplate = (option) => <Tag value={option.label} severity={getSeverityGestion(option.label)} />
+  const statusItemTemplate = (option) => <Tag value={option.label} severity={getSeverityGestion(option.label)} />;
 
   const statusRowFilterTemplate = (options) => {
     return (
@@ -190,89 +183,85 @@ const Orders = () => {
         optionLabel="label"
         placeholder="Estado" className="p-column-filter" showClear style={{ minWidth: '10em' }}
       />
-    )
-  }
+    );
+  };
 
-  const separacionDeMilesPrice = (rowData) => rowData?.price ? rowData.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.') : 0
+  const separacionDeMilesPrice = (rowData) => rowData?.price ? rowData.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.') : 0;
 
-  const getSubtotal = (rowData) => rowData.subtotal.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+  const getSubtotal = (rowData) => rowData.subtotal.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 
   const getTotal = () => {
     let amount = 0;
-  
+
     if (item.order_detail && Array.isArray(item.order_detail) && item.order_detail.length > 0) {
       amount = item.order_detail.reduce((acc, detail) => {
         return acc + parseFloat(detail.subtotal);
       }, 0);
     }
-  
+
     return amount?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-  } 
+  };
 
   const getFormatState = (rowData) => {
-    if (rowData?.status?.description === 'Preparacion') return <span className={`usuario-badge status-borrador`}>{rowData?.status?.description}</span>
-    if (rowData?.status?.description === 'En camino') return <span className={`usuario-badge status-activo`}>{rowData?.status?.description}</span>
-    if (rowData?.status?.description === 'Resivido') return <span className={`usuario-badge status-preparacion`}>{rowData?.status?.description}</span>   
-  }
+    if (rowData?.status?.description === 'Preparacion') return <span className={`usuario-badge status-borrador`}>{rowData?.status?.description}</span>;
+    if (rowData?.status?.description === 'Enviado') return <span className={`usuario-badge status-activo`}>{rowData?.status?.description}</span>;
+    if (rowData?.status?.description === 'Resivido') return <span className={`usuario-badge status-preparacion`}>{rowData?.status?.description}</span>;
+  };
 
-  const dateFilterTemplate = () => <Calendar ref={calendar} dateFormat='dd/mm/yy' locale='es' value={dates} onChange={(e) => setDates(e.value)} selectionMode="range" readOnlyInput showButtonBar placeholder='Desde-Hasta' />
+  const dateFilterTemplate = () => <Calendar ref={calendar} dateFormat='dd/mm/yy' locale='es' value={dates} onChange={(e) => setDates(e.value)} selectionMode="range" readOnlyInput showButtonBar placeholder='Desde-Hasta' />;
 
- 
   const editItem = async (rowData) => {
-    setItem(rowData)
-    setItemDialog(true)
+    setItem(rowData);
+    setItemDialog(true);
   };
 
   const stateChange = () => {
-    setLoading1(true)
+    setLoading1(true);
 
-    const itemsId = selectedItems.map(item => item.id)
+    const itemsId = selectedItems.map(item => item.id);
     const dataToSend = {
       ids: itemsId,
       status_id: STATUS_TYPES.MIGRADO      
-    }
+    };
 
-    Submit(dataToSend, 'update-orders-status ')
-    .then(async response => {
-      if (response.status === 200) {
-        return response.json()
-      } else {
-        const { msg } = await response.json()
-        throw new Error(msg)
-      }
+    fetch('/api/shop/update-orders-status', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getCookie('token')}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(dataToSend)
     })
-    .then(data => {
-      toast.current?.show({ severity: 'success', summary: 'Éxito!', detail: data.message || "Las órdenes se migraron correctamente", life: 3000 })
-      setlazyState({
-        ...lazyState,
-        filters: {
-          ...lazyState.filters,
-          "status.description": { value: {label: 'Confirmado'}, matchMode: FilterMatchMode.EQUALS },
+      .then(async response => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          const { msg } = await response.json();
+          throw new Error(msg);
         }
       })
-    })
-    .catch((error) => {
-      if (error.name !== 'AbortError') {
-        toast.current?.show({ severity: 'warn', summary: 'Error !', detail: error.message || "Error en el servidor. Contacte a soporte", life: 3000 })
-      }
+      .then(data => {
+        toast.current?.show({ severity: 'success', summary: 'Éxito!', detail: data.message || "Las órdenes se migraron correctamente", life: 3000 });
+        setLazyState({
+          ...lazyState,
+          filters: {
+            ...lazyState.filters,
+            "status.description": { value: { label: 'En camino' }, matchMode: FilterMatchMode.EQUALS },
+          }
+        });
+      })
+      .catch((error) => {
+        if (error.name !== 'AbortError') {
+          toast.current?.show({ severity: 'warn', summary: 'Error !', detail: error.message || "Error en el servidor. Contacte a soporte", life: 3000 });
+        }
 
-      setLoading1(false)
-    })
+        setLoading1(false);
+      });
+  };
 
-  }
-  
   const header = (
     <div className="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
       <h5 className="m-0">Órdenes</h5>
-
-      {/*
-      <div className="flex flex-wrap mt-2 md:mt-0">
-        <Button label="Migrar Órdenes" icon="pi pi-send" className="mr-2" disabled={!(selectedItems.length > 0)} 
-          onClick={() => stateChange()}
-        />
-      </div>
-      */}
-      
     </div>
   );
 
@@ -296,7 +285,6 @@ const Orders = () => {
     return index;
   };
 
-  
   const hideItemChangeDialog = () => {
     setItemChangeDialog(false);
   };
@@ -312,24 +300,24 @@ const Orders = () => {
     <div style={{ marginTop: '1rem' }}>
       <Button
         severity='info'
-        label="En preparación"
+        label="Preparación"
         icon="pi pi-thumbs-up"
-        className="col-4"
-        disabled={!(item?.status?.id === STATUS_TYPES.ACTIVO)}
-      />
-      <Button
-        severity='success'
-        label="Confirmar"
-        icon="pi pi-check"
         className="col-4"
         disabled={!(item?.status?.id === STATUS_TYPES.PREPARACION)}
       />
       <Button
+        severity='success'
+        label="Enviado"
+        icon="pi pi-check"
+        className="col-4"
+        disabled={!(item?.status?.id === STATUS_TYPES.ENVIADO)}
+      />
+      <Button
         severity='warning'
-        label="Migrar orden"
+        label="Resivido"
         icon="pi pi-send"
         className="col-4"
-        disabled={!(item?.status?.id === STATUS_TYPES.CONFIRMADO)}
+        disabled={!(item?.status?.id === STATUS_TYPES.RECIBIDO)}
       />
     </div>
   );
@@ -455,7 +443,7 @@ const Orders = () => {
         </div>
       </div>
     </>
-  )
-}
+  );
+};
 
-export default Orders
+export default Orders;

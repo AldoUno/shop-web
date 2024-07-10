@@ -41,7 +41,7 @@ const RecuperarPassPage = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         
-        if (!state.email || !isValidEmail(state.email) ) return setError('Correo y/o contraseña incorrectos')
+        if (!state.email || !isValidEmail(state.email) ) return setError('El email no es valido. Verifica!')
 
         setLoading(true);
 
@@ -56,7 +56,9 @@ const RecuperarPassPage = () => {
             })
             .then(data => {
                 toast.current.show({ severity: 'success', summary: 'Éxito', detail: 'Verifica tu bandeja de entrada y sigue los pasos para resetar tu password.', life: 5000 });
-                setState('')
+                setState({
+                  email: ''
+                })
             })
             .catch((error) => {
                 toast.current.show({ severity: 'warn', summary: 'Error', detail: 'Ocurrio un error al intentar enviar el correo. Contacta a soporte.', life: 5000 });

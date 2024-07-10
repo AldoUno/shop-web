@@ -1,3 +1,4 @@
+import getConfig from 'next/config';
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import { Button } from 'primereact/button';
@@ -17,14 +18,29 @@ const CambiarPassPage = () => {
     const toast = useRef(null);
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+    const contextPath = getConfig().publicRuntimeConfig.contextPath;
     const router = useRouter();
     const containerClassName = classNames('surface-ground flex align-items-center justify-content-center min-h-screen min-w-screen overflow-hidden', { 'p-input-filled': 'filled' }, 'svg__background');
-    const { token } = router.query
+    const {token, email} = router.query
 
     const [state, setState] = useState({
+        email: '',
+        token: '',
         password: '',
         password_confirmation: ''
     });
+
+    
+
+    useEffect(() => {
+
+        setState({
+            ...state,
+            ['email']: email,
+            ['token']: token,
+        })
+
+    }, [token, email])
 
     const handleChange = ({ target }) => {
         setState({
@@ -62,22 +78,24 @@ const CambiarPassPage = () => {
 
         setLoading(true);
 
-        ResetPassword(state, token)
+        const newData = { email: state.email, token: state.token, password: state.password, password_confirmation: state.password_confirmation }
+
+        ResetPassword(newData)
             .then(async response => {
-                if (response.status === 200) {
+                if (response.ok) {
                     return response.json()
                 } else {
-                    const { description } = await response.json()
-                    throw new Error(description)
+                    const { msg } = await response.json()
+                    throw new Error(msg)
                 }
             })
-            .then(data => {
+            .then(async data => {
                 toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Serás redirigido al Login para iniciar sesión con tu nueva contraseña', life: 3000 });
                 
                 redirectToLogin()
             })
             .catch((error) => {
-                toast.current.show({ severity: 'warn', summary: 'Alerta !', detail: 'Ocurrio un error al intentar modificar la contraseña. Contacta a soporte.', life: 5000 });
+                toast.current.show({ severity: 'warn', summary: 'Alerta !', detail: error?.message || 'Ocurrio un error al intentar modificar la contraseña. Contacta a soporte.', life: 5000 });
                 e.target[0].focus()
             })
             .finally(() => setLoading(false))
@@ -88,6 +106,7 @@ const CambiarPassPage = () => {
             <Toast ref={toast} />
             <div className={containerClassName}>
                 <div className="flex flex-column align-items-center justify-content-center" style={{margin: '0 1rem'}}>
+                    <img src={`${contextPath}/layout/images/franz-logo.png`} alt="Logo Santa Librada" className="mb-5 w-6rem flex-shrink-0" />
                     <div style={{ borderRadius: '56px', padding: '0.3rem', background: 'linear-gradient(180deg, var(--primary-color) 10%, rgba(33, 150, 243, 0) 30%)' }}>
                         <div className="w-full surface-card py-8 px-5 sm:px-8" style={{ borderRadius: '53px' }}>
                             <br />
