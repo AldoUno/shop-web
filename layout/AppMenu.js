@@ -27,6 +27,7 @@ const AppMenu = () => {
                 { label: 'Permisos', icon: 'pi pi-lock', to: routes.permissions, badge: 'NEW', visible: true},
                 { label: 'Productos', icon: 'pi pi-qrcode', to: routes.products, badge: 'NEW', visible: true},                
                 { label: 'Categorias', icon: 'pi pi-tag', to: routes.category, badge: 'NEW', visible: true},
+                { label: 'Proveedores', icon: 'pi pi-id-card', to: routes.proveedores, badge: 'NEW', visible: true},
             ]
         },
     ]

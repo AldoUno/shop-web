@@ -1,6 +1,6 @@
 describe('Test de Login en Santa Librada', () => {
   it('Usuario logeandose en la web', () => {
-    cy.visit('http://localhost:3000/')
+    cy.visit('http://localhost:3000/auth/login/')
 
     cy.get("input[name=email]").type("santiago-heilborn@ajvierci.com.py");
     cy.get("input[name=password]").type("H4zun4n0n1");

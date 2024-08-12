@@ -13,7 +13,8 @@ const routes = {
     permissions: '/panel/administrativo/permissions',
     products: '/panel/administrativo/products',    
     category: '/panel/administrativo/categories',
-    orders: '/panel/gestion/orders'
+    orders: '/panel/gestion/orders',
+    proveedores: '/panel/administrativo/proveedores'
 }
 
 export default routes

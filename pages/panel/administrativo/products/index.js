@@ -81,6 +81,7 @@ const Products = React.memo(() => {
     Promise.all([
       List('all-categories', signal),
       List('all-products', signal),
+      List('all-proveedores', signal)
     ])
       .then(responses => Promise.all(responses.map(async response => {
         if (response.ok) {
