@@ -66,7 +66,7 @@ const LoginPage = () => {
             }, {});
     
             if (!permissionsObject.hasOwnProperty('web')) {
-              setError("No tienes permisos necesarios!")
+              setError("¡No tienes los permisos necesarios!")
               return
             }
     
@@ -75,7 +75,7 @@ const LoginPage = () => {
             router.push(routes.inicio);
           })
           .catch((error) => {
-            setError(error.message || "Error de conexión. Contacte a soporte!")
+            setError(error.message || "Error de conexión. ¡Contacte a soporte!")
             e.target[0].focus()
           })
           .finally(() => setLoading(false))
@@ -90,7 +90,7 @@ const LoginPage = () => {
                 <div className="w-full surface-card py-8 px-5 sm:px-8" style={{ borderRadius: '53px' }}>
                   <div className="text-center">
                     <img src={`${contextPath}/layout/images/logo.png`} className='mb-2' alt="Logo CRM" style={{ marginTop: '-2rem', width: '100%', maxWidth: '150px' }} />
-                    <div className="text-900 text-3xl font-medium mb-3">Bienvenido!</div>
+                    <div className="text-900 text-3xl font-medium mb-3">¡Bienvenido a CRM!</div>
                     <span className="text-600 font-medium">Inicia sesión para continuar</span>
                   </div>
                   <form onSubmit={handleSubmit}>
@@ -106,7 +106,7 @@ const LoginPage = () => {
                         inputid="email"
                         name="email"
                         defaultValue={state.email}
-                        className={classNames("w-full md:w-30rem", { 'p-invalid': error === 'El correo no es válida' })}
+                        className={classNames("w-full md:w-30rem", { 'p-invalid': error === 'El correo no es válido' })}
                         placeholder="Email"
                         style={{ padding: '1rem' }}
                         onChange={handleChange}
@@ -141,7 +141,7 @@ const LoginPage = () => {
                   </div>
 
                   <a onClick={() => router.push(routes.recuperarPassword)} className="font-medium no-underline ml-2 text-right cursor-pointer" style={{ color: 'var(--primary-color)' }}>
-                    Olvidaste tu contraseña?
+                    ¿Olvidaste tu contraseña?
                   </a>
                 </div>
                 <Button label="Iniciar Sesión" loading={loading} type="submit" className="w-full p-3 text-xl"></Button>

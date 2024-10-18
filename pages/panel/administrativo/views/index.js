@@ -64,7 +64,7 @@ const Views = React.memo(() => {
       .then(data => setItems(data.data))
       .catch((error) => {
         if (error.name !== 'AbortError') {
-          toast.current?.show({ severity: 'warn', summary: 'Error !', detail: error.message || "Error en el servidor. Contacte a soporte", life: 3000 })
+          toast.current?.show({ severity: 'warn', summary: '¡Error!', detail: error.message || "Error en el servidor. Contacte a soporte", life: 3000 })
         }
       })
       .finally(() => {
@@ -117,7 +117,7 @@ const Views = React.memo(() => {
       })
       .then((data) => items.unshift(data.data))
       .catch((error) => {
-        toast.current?.show({ severity: 'warn', summary: 'Error !', detail: error.message || "Error en el servidor. Contacte a soporte", life: 3000 })
+        toast.current?.show({ severity: 'warn', summary: '¡Error!', detail: error.message || "Error en el servidor. Contacte a soporte", life: 3000 })
       })
       .finally(() => {
         setItem(emptyItem)
@@ -138,7 +138,7 @@ const Views = React.memo(() => {
         }
       })
       .then(() => items[index] = item)
-      .catch((error) => toast.current?.show({ severity: 'warn', summary: 'Error !', detail: error.message || "Error en el servidor. Contacte a soporte", life: 3000 }))
+      .catch((error) => toast.current?.show({ severity: 'warn', summary: '¡Error!', detail: error.message || "Error en el servidor. Contacte a soporte", life: 3000 }))
       .finally(() => {
         setItem(emptyItem)
         setLoading1(false)
@@ -159,7 +159,7 @@ const Views = React.memo(() => {
         }
       })
       .then(() => items.splice(index, 1))
-      .catch((error) => toast.current?.show({ severity: 'warn', summary: 'Error !', detail: error.message || "Error en el servidor. Contacte a soporte", life: 3000 }))
+      .catch((error) => toast.current?.show({ severity: 'warn', summary: '¡Error!', detail: error.message || "Error en el servidor. Contacte a soporte", life: 3000 }))
       .finally(() => {
         setItem(emptyItem)
         setLoading1(false)
@@ -169,7 +169,7 @@ const Views = React.memo(() => {
   const saveItem = () => {
     setSubmitted(true)
     if (!item.description) {
-      return toast.current?.show({ severity: 'warn', summary: 'Alerta!', detail: 'Faltan llenar uno o más campos', life: 3000 });
+      return toast.current?.show({ severity: 'warn', summary: '¡Alerta!', detail: 'Faltan llenar uno o más campos', life: 3000 });
     }
 
     if (item.id) {
@@ -254,7 +254,7 @@ const Views = React.memo(() => {
   const deleteItemDialogFooter = (
     <>
       <Button label="No" icon="pi pi-times" className="p-button-text" type="submit" onClick={hideDeleteitemDialog} />
-      <Button label="Si" icon="pi pi-check" className="p-button-text" onClick={deleteItem} />
+      <Button label="Sí" icon="pi pi-check" className="p-button-text" onClick={deleteItem} />
     </>
   );
 
@@ -282,7 +282,7 @@ const Views = React.memo(() => {
               rowsPerPageOptions={[5, 10, 25]}
               className="datatable-responsive alternar"
               paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-              currentPageReportTemplate="Mostrando del {first} al {last} de {totalRecords} items"
+              currentPageReportTemplate="Mostrando del {first} al {last} de {totalRecords} ítems"
               filters={filters}
               filterDisplay="row"
               globalFilterFields={['id', 'description']}
@@ -307,7 +307,7 @@ const Views = React.memo(() => {
                   required
                   autoFocus
                   className={classNames({ 'p-invalid': submitted && !item.item })} placeholder="Administrador" />
-                {submitted && !item.description && <small className="p-invalid p-error">La descripción es requerida.</small>}
+                {submitted && !item.description && <small className="p-invalid p-error">La VISTA es requerida.</small>}
               </div>
             </Dialog>
 
@@ -316,7 +316,7 @@ const Views = React.memo(() => {
                 <i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: '2rem' }} />
                 {item && (
                   <span>
-                    Estás seguro que quieres eliminar la vista <b>{item.description}</b>?
+                    ¿Estás seguro que quieres eliminar la vista <b>{item.description}</b>?
                   </span>
                 )}
               </div>

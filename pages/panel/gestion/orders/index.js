@@ -9,51 +9,58 @@ import { InputText } from 'primereact/inputtext';
 import { Dropdown } from 'primereact/dropdown';
 import { Toast } from 'primereact/toast';
 import { classNames } from 'primereact/utils';
+import { List, Edit, Submit } from '../../../../utils/service/fetchData';
 import { FilterMatchMode } from 'primereact/api';
 import { Tag } from 'primereact/tag';
 import { Divider } from "primereact/divider";
-import { PDFDownloadLink } from '@react-pdf/renderer';
-import { List, Get, Edit, Delete, Submit } from '../../../../utils/service/fetchData';
 import { addLocale } from 'primereact/api';
 import { Calendar } from 'primereact/calendar';
-import { getCookie } from 'cookies-next';
 import { ColumnGroup } from 'primereact/columngroup';
 import { Row } from 'primereact/row';
-import { STATUS_TYPES } from '../../../../constants/STATUS_TYPES';
 import { getSeverityGestion } from '../../../../constants/GET_SEVERITY';
-import { ORDER_ACTIONS } from '../../../../constants/ORDER_ACTIONS';
 
+
+const formatDate = (date) => {
+  return date ? new Date(date).toLocaleDateString('es-ES') : 'Sin fecha';
+};
+
+const dateBodyTemplate = (rowData) => {
+  return formatDate(rowData.created_at);
+};
+
+const STATUS_TYPES = {
+  ACTIVO: 1,
+  PREPARACION: 2,
+  CONFIRMADO: 3,
+};
 const Orders = () => {
   const initialValues = {
     products: [],
-    client_id: null,
-    currency_id: 1,
+    user_id: null,
     deliveryDate: null,
     date: null
-  }
+  };
 
   const toast = useRef(null);
   const dt = useRef(null);
   const [items, setItems] = useState([]);
   const [item, setItem] = useState(initialValues);
-  const [selectedItems, setSelectedItems] = useState([])
+  const [selectedItems, setSelectedItems] = useState([]);
   const [loading1, setLoading1] = useState(false);
-  const [itemChangeDialog, setItemChangeDialog] = useState(false);
   const [itemDialog, setItemDialog] = useState(false);
-  const [messageConfirm, setMessageConfirm] = useState('')
-  const [dates, setDates] = useState('')
-  const calendar = useRef(null)
+  const [dates, setDates] = useState('');
+  const calendar = useRef(null);
 
   // LAZY IMPLEMENTATION
   const [totalRecords, setTotalRecords] = useState(0);
-  const [lazyState, setlazyState] = useState({
+  const [lazyState, setLazyState] = useState({
     first: 0,
     rows: 10,
     page: 0,
     filters: {
       id: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
-      "client.razon_social": { value: null, matchMode: FilterMatchMode.STARTS_WITH },
-      "status.description": { value: {label: 'Confirmado'}, matchMode: FilterMatchMode.EQUALS },
+      "user.name": { value: null, matchMode: FilterMatchMode.STARTS_WITH },
+      "status.description": { value: '', matchMode: FilterMatchMode.EQUALS },
       date: { value: [] }
     }
   });
@@ -71,11 +78,10 @@ const Orders = () => {
   });
 
   const [statuses] = useState([
+    { label: 'Activo' },
     { label: 'Preparacion' },
-    { label: 'Enviado' },
-    { label: 'Resivido' },
+    { label: 'Confirmado' }
   ]);
-
 
   const controller = new AbortController();
   const { signal } = controller;
@@ -112,6 +118,7 @@ const Orders = () => {
         }
       });
       setSelectedItems([]);
+
       calendar?.current?.hide();
     } else if (dates === null) {
       setLazyState({
@@ -167,7 +174,7 @@ const Orders = () => {
 
   const onFilter = (event) => {
     event['first'] = 0;
-    setlazyState(event);
+    setLazyState(event);
   };
 
   const statusItemTemplate = (option) => <Tag value={option.label} severity={getSeverityGestion(option.label)} />;
@@ -203,9 +210,9 @@ const Orders = () => {
   };
 
   const getFormatState = (rowData) => {
-    if (rowData?.status?.description === 'Preparacion') return <span className={`usuario-badge status-borrador`}>{rowData?.status?.description}</span>;
-    if (rowData?.status?.description === 'Enviado') return <span className={`usuario-badge status-activo`}>{rowData?.status?.description}</span>;
-    if (rowData?.status?.description === 'Resivido') return <span className={`usuario-badge status-preparacion`}>{rowData?.status?.description}</span>;
+    if (rowData?.status?.description === 'Activo') return <span className={`usuario-badge status-activo`} style={{ backgroundColor: '#ffc107', color: 'white' }}>{rowData?.status?.description}</span>;
+    if (rowData?.status?.description === 'Preparacion') return <span className={`usuario-badge status-preparacion`} style={{ backgroundColor: '#007bff', color: 'white' }}>{rowData?.status?.description}</span>;
+    if (rowData?.status?.description === 'Confirmado') return <span className={`usuario-badge status-confirmado`} style={{ backgroundColor: '#28a745', color: 'white' }}>{rowData?.status?.description}</span>;
   };
 
   const dateFilterTemplate = () => <Calendar ref={calendar} dateFormat='dd/mm/yy' locale='es' value={dates} onChange={(e) => setDates(e.value)} selectionMode="range" readOnlyInput showButtonBar placeholder='Desde-Hasta' />;
@@ -221,17 +228,10 @@ const Orders = () => {
     const itemsId = selectedItems.map(item => item.id);
     const dataToSend = {
       ids: itemsId,
-      status_id: STATUS_TYPES.MIGRADO      
+      status_id: STATUS_TYPES.CONFIRMADO
     };
 
-    fetch('/api/shop/update-orders-status', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${getCookie('token')}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(dataToSend)
-    })
+    Submit(dataToSend, 'update-orders-status')
       .then(async response => {
         if (response.ok) {
           return response.json();
@@ -246,7 +246,6 @@ const Orders = () => {
           ...lazyState,
           filters: {
             ...lazyState.filters,
-            "status.description": { value: { label: 'En camino' }, matchMode: FilterMatchMode.EQUALS },
           }
         });
       })
@@ -259,9 +258,47 @@ const Orders = () => {
       });
   };
 
+  const uniqueOrderChangeState = (status_id) => {
+    setItemDialog(false);
+    setLoading1(true);
+    const item_to_send = {
+      status_id
+    };
+    Edit(item_to_send, 'update-order', item.id)
+      .then(async response => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          const { msg } = await response.json();
+          throw new Error(msg);
+        }
+      })
+      .then(data => {
+        toast.current?.show({ severity: 'success', summary: 'Éxito!', detail: data.message || "La órden ha sido actualizada", life: 3000 });
+        setLazyState({
+          ...lazyState,
+          filters: {
+            ...lazyState.filters,
+          }
+        });
+      })
+      .catch((error) => {
+        if (error.name !== 'AbortError') {
+          toast.current?.show({ severity: 'warn', summary: 'Error !', detail: error.message || "Error en el servidor. Contacte a soporte", life: 3000 });
+        }
+        setLoading1(false);
+      });
+  };
+
   const header = (
     <div className="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
       <h5 className="m-0">Órdenes</h5>
+
+      <div className="flex flex-wrap mt-2 md:mt-0">
+        <Button label="Migrar Órdenes" icon="pi pi-send" className="mr-2" disabled={!(selectedItems.length > 0)}
+          onClick={() => stateChange()}
+        />
+      </div>
     </div>
   );
 
@@ -273,52 +310,25 @@ const Orders = () => {
     );
   };
 
-  const findIndexById = (id) => {
-    let index = -1;
-    for (let i = 0; i < items.length; i++) {
-      if (items[i].id === id) {
-        index = i;
-        break;
-      }
-    }
-
-    return index;
-  };
-
-  const hideItemChangeDialog = () => {
-    setItemChangeDialog(false);
-  };
-
-  const itemChangeDialogFooter = (
-    <>
-      <Button label="No" icon="pi pi-times" className="p-button-text" type="submit" onClick={hideItemChangeDialog} />
-      <Button label="Si" icon="pi pi-check" className="p-button-text" />
-    </>
-  );
-
   const itemDialogFooter = (
     <div style={{ marginTop: '1rem' }}>
       <Button
         severity='info'
-        label="Preparación"
+        label="Preparacion"
         icon="pi pi-thumbs-up"
         className="col-4"
-        disabled={!(item?.status?.id === STATUS_TYPES.PREPARACION)}
+        onClick={() => uniqueOrderChangeState(STATUS_TYPES.PREPARACION)}
+        disabled={!(item?.status?.id === STATUS_TYPES.ACTIVO)}
       />
       <Button
         severity='success'
-        label="Enviado"
+        label="Confirmar"
         icon="pi pi-check"
         className="col-4"
-        disabled={!(item?.status?.id === STATUS_TYPES.ENVIADO)}
+        onClick={() => uniqueOrderChangeState(STATUS_TYPES.CONFIRMADO)}
+        disabled={!(item?.status?.id === STATUS_TYPES.PREPARACION)}
       />
-      <Button
-        severity='warning'
-        label="Resivido"
-        icon="pi pi-send"
-        className="col-4"
-        disabled={!(item?.status?.id === STATUS_TYPES.RECIBIDO)}
-      />
+      
     </div>
   );
 
@@ -362,54 +372,34 @@ const Orders = () => {
               sortOrder={lazyState.sortOrder}
               onFilter={onFilter}
               selectionMode='checkbox'
-              selection={selectedItems} 
+              selection={selectedItems}
               onSelectionChange={(e) => setSelectedItems(e.value)}
             >
-              <Column className='column__check' selectionMode="multiple" headerStyle={{ width: '4rem' }}></Column>
-              <Column field="id" header="Código" filter filterField='id' filterPlaceholder="Código" style={{ maxWidth: '4rem'}}></Column>
-              <Column field="client.razon_social" header="Cliente" filter filterField='client.razon_social' filterPlaceholder="Cliente"></Column>
-              <Column field="date" header="Fecha de Solicitud" filter filterField='date' showClearButton filterPlaceholder="Fecha de Solicitud" style={{ minWidth: '17rem' }} filterElement={dateFilterTemplate}></Column>
+              <Column field="columnCheck" className='column__check' selectionMode="multiple" headerStyle={{ width: '4rem' }} ></Column>
+              <Column field="id" header="Código" filter filterField='id' filterPlaceholder="Código" style={{ maxWidth: '4rem' }}></Column>
+              <Column field="user.name" header="Cliente" filter filterField='user.name' filterPlaceholder="Cliente"></Column>
+              <Column field="created_at" header="Fecha de Solicitud" filter filterField='created_at' showClearButton filterPlaceholder="Fecha de Solicitud" style={{ minWidth: '17rem' }} filterElement={dateFilterTemplate} body={dateBodyTemplate} ></Column>
               <Column field="status.description" header="Estado" filter filterField='status.description' filterPlaceholder="Estado" body={getFormatState} filterElement={statusRowFilterTemplate}></Column>
               <Column field="acciones" header="Acciones" body={actionBodyTemplate}></Column>
             </DataTable>
-            
+
             <Dialog draggable={false} resizable={false} maximizable visible={itemDialog} style={{ width: '800px', maxWidth: '100%' }} header="Detalles de la orden" modal className="p-fluid" footer={itemDialogFooter} onHide={() => setItemDialog(false)}>
-              <div className="formgrid grid">
-                <div className={classNames({ 'p-input-filled': item.client?.codigo }, 'field col-12 md:col-4')}>
-                  <label htmlFor="client.code">Cod Cliente</label>
-                  <InputText
-                    id="client.code"
-                    value={item.client?.codigo || ''}
-                    disabled />
-                </div>
-                <div className={classNames({ 'p-input-filled': item.client?.razon_social }, 'field col-12 md:col-4')}>
-                  <label htmlFor="client.razon_social">Denominación</label>
-                  <InputText
-                    id="client.razon_social"
-                    value={item.client?.razon_social || ''}
-                    disabled />
-                </div>
-                <div className={classNames({ 'p-input-filled': item.client?.ruc }, 'field col-12 md:col-4')}>
-                  <label htmlFor="client.ruc">RUC</label>
-                  <InputText
-                    id="client.ruc"
-                    value={item.client?.ruc}
-                    disabled />
-                </div>
-              </div>
-              <div className="formgrid grid">
-                <div className={classNames({ 'p-input-filled': item.date }, 'field col-12 md:col-3')}>
-                  <label htmlFor="date">Fecha</label>
-                  <InputText
-                    id="date"
-                    value={item.date || ''}
-                    disabled />
-                </div>
-                <div className={classNames({ 'p-input-filled': item.status }, 'field col-12 md:col-3')}>
-                  <label className='mb-3'>Estado</label> <br />
-                  {getFormatState(item)}
-                </div>
-              </div>
+            <div className="formgrid grid">
+            <div className={classNames({ 'p-input-filled': item.user?.cedula }, 'field col-12 md:col-4')}>
+              <label htmlFor="user.cedula">Cédula</label>
+              <InputText
+                id="user.cedula"
+                value={item.user?.cedula || ''}
+                disabled />
+            </div>
+            <div className={classNames({ 'p-input-filled': item.user?.name }, 'field col-12 md:col-4')}>
+              <label htmlFor="user.name">Denominación</label>
+              <InputText
+                id="user.name"
+                value={`${item.user?.name || ''} ${item.user?.surname || ''}`}
+                disabled />
+            </div>
+          </div>
               <Divider align="left" className='mb-5 mt-5'>
                 <div className="inline-flex align-items-center">
                   <i className="pi pi-list mr-2"></i>
@@ -427,17 +417,6 @@ const Orders = () => {
                 </DataTable>
               </div>
 
-            </Dialog>
-
-            <Dialog visible={itemChangeDialog} style={{ width: '450px' }} header="Confirmar" modal footer={itemChangeDialogFooter} onHide={hideItemChangeDialog}>
-              <div className="flex align-items-center justify-content-center">
-                <i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: '2rem' }} />
-                {item && (
-                  <span>
-                    Estás seguro que quieres <b>{messageConfirm?.toUpperCase()}</b> el registro nro. <b>{item.id}</b>?
-                  </span>
-                )}
-              </div>
             </Dialog>
           </div>
         </div>

@@ -92,7 +92,7 @@ const Permissions = React.memo(() => {
       })
       .catch(error => {
         if (error.name !== 'AbortError') {
-          return toast.current?.show({ severity: 'warn', summary: 'Error !', detail: error.message || "Error en el servidor. Contacte a soporte", life: 3000 })
+          return toast.current?.show({ severity: 'warn', summary: '¡Error!', detail: error.message || "Error en el servidor. Contacte a soporte", life: 3000 })
         }
       })
       .finally(() => setLoading1(false))
@@ -144,7 +144,7 @@ const Permissions = React.memo(() => {
         setItems([...items, newData])
       })
       .catch((error) => {
-        toast.current?.show({ severity: 'warn', summary: 'Error !', detail: error.message || "Error en el servidor. Contacte a soporte", life: 3000 })
+        toast.current?.show({ severity: 'warn', summary: '¡Error!', detail: error.message || "Error en el servidor. Contacte a soporte", life: 3000 })
       })
       .finally(() => {
         setItem(emptyItem)
@@ -178,10 +178,10 @@ const Permissions = React.memo(() => {
         }
       })
       .then(() => {
-        item.status = item?.status === 1 ? 'Acitvo' : 'Inactivo'
+        item.status = item?.status === 1 ? 'Activo' : 'Inactivo'
         items[index] = item
       })
-      .catch((error) => toast.current?.show({ severity: 'warn', summary: 'Error !', detail: error.message || "Error en el servidor. Contacte a soporte", life: 3000 }))
+      .catch((error) => toast.current?.show({ severity: 'warn', summary: '¡Error!', detail: error.message || "Error en el servidor. Contacte a soporte", life: 3000 }))
       .finally(() => {
         setItem(emptyItem)
         setLoading1(false)
@@ -202,7 +202,7 @@ const Permissions = React.memo(() => {
         }
       })
       .then(() => items.splice(index, 1))
-      .catch((error) => toast.current?.show({ severity: 'warn', summary: 'Error !', detail: error.message || "Error en el servidor. Contacte a soporte", life: 3000 }))
+      .catch((error) => toast.current?.show({ severity: 'warn', summary: '¡Error!', detail: error.message || "Error en el servidor. Contacte a soporte", life: 3000 }))
       .finally(() => {
         setItem(emptyItem)
         setLoading1(false)
@@ -212,7 +212,7 @@ const Permissions = React.memo(() => {
   const saveItem = () => {
     setSubmitted(true)
     if (!item.view || !item.rol) {
-      return toast.current?.show({ severity: 'warn', summary: 'Alerta!', detail: 'Faltan llenar uno o más campos', life: 3000 });
+      return toast.current?.show({ severity: 'warn', summary: '¡Alerta!', detail: 'Faltan llenar uno o más campos', life: 3000 });
     }
     if (item.id) {
       editarItem();
@@ -264,7 +264,7 @@ const Permissions = React.memo(() => {
     setItems(_items);
     setDeleteItemsDialog(false);
     setSelectedItems(null);
-    toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Items eliminados', life: 3000 });
+    toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Ítems eliminados', life: 3000 });
   };
 
   const hideDeleteItemsDialog = () => {
@@ -327,13 +327,13 @@ const Permissions = React.memo(() => {
   const deleteItemDialogFooter = (
     <>
       <Button label="No" icon="pi pi-times" className="p-button-text" type="submit" onClick={hideDeleteItemDialog} />
-      <Button label="Si" icon="pi pi-check" className="p-button-text" onClick={deleteItem} />
+      <Button label="Sí" icon="pi pi-check" className="p-button-text" onClick={deleteItem} />
     </>
   );
   const deleteItemsDialogFooter = (
     <>
       <Button label="No" icon="pi pi-times" className="p-button-text" onClick={hideDeleteItemsDialog} />
-      <Button label="Si" icon="pi pi-check" className="p-button-text" onClick={deleteSelectedItems} />
+      <Button label="Sí" icon="pi pi-check" className="p-button-text" onClick={deleteSelectedItems} />
     </>
   )
 
@@ -355,7 +355,7 @@ const Permissions = React.memo(() => {
               rowsPerPageOptions={[5, 10, 25]}
               className="datatable-responsive alternar"
               paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-              currentPageReportTemplate="Mostrando del {first} al {last} de {totalRecords} items"
+              currentPageReportTemplate="Mostrando del {first} al {last} de {totalRecords} ítems"
               filters={filters}
               filterDisplay="row"
               globalFilterFields={['id', 'rol.description', 'view.description']}
@@ -394,7 +394,7 @@ const Permissions = React.memo(() => {
                     options={views}
                     optionLabel="description"
                     className={classNames({ 'p-invalid': submitted && !item.view })}
-                    placeholder="Selecciona el formulario"
+                    placeholder="Selecciona la vista"
                   />
                   {submitted && !item.view && <small className="p-invalid p-error">La VISTA es requerida.</small>}
                 </div>
@@ -439,7 +439,7 @@ const Permissions = React.memo(() => {
                 <i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: '2rem' }} />
                 {item && (
                   <span>
-                    Estás seguro que quieres eliminar el Permiso Nº <b>{item.id}</b>?
+                    ¿Estás seguro que quieres eliminar el Permiso Nº <b>{item.id}</b>?
                   </span>
                 )}
               </div>
@@ -448,7 +448,7 @@ const Permissions = React.memo(() => {
             <Dialog visible={deleteItemsDialog} style={{ width: '450px' }} header="Confirm" modal footer={deleteItemsDialogFooter} onHide={hideDeleteItemsDialog}>
               <div className="flex align-items-center justify-content-center">
                 <i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: '2rem' }} />
-                {item && <span>Estás seguro que quieres eliminar los items seleccionados?</span>}
+                {item && <span>¿Estás seguro que quieres eliminar el o los ítems seleccionados?</span>}
               </div>
             </Dialog>
           </div>

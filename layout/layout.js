@@ -41,7 +41,7 @@ const Layout = (props) => {
     ])
       .then(([refreshResponse]) => {
         if (refreshResponse.status !== 200) {
-          throw new Error('No se pudo obtener los datos del usuario. Intentalo de nuevo.');
+          throw new Error('No se pudieron obtener los datos del usuario. Inténtalo de nuevo.');
         }
 
         return Promise.all([
@@ -172,9 +172,9 @@ const Layout = (props) => {
   return (
     <React.Fragment>
       <Head>
-        <title>Shop | Mery Xmas</title>
+        <title>CRM</title>
         <meta charSet="UTF-8" />
-        <meta name="description" content="Sistema de gestión de solicitudes de notas de crédito" />
+        <meta name="description" content="Sistema de gestión de pedidos de canastas de regalo" />
         <meta name="viewport" content="initial-scale=1, width=device-width" />
         <link rel="icon" href={`${contextPath}/favicon.png`} type="image/x-icon"></link>
 

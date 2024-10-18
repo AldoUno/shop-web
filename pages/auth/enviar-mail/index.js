@@ -41,7 +41,7 @@ const RecuperarPassPage = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         
-        if (!state.email || !isValidEmail(state.email) ) return setError('El email no es valido. Verifica!')
+        if (!state.email || !isValidEmail(state.email) ) return setError('El email no es válido. ¡Verifícalo!')
 
         setLoading(true);
 
@@ -55,13 +55,13 @@ const RecuperarPassPage = () => {
                 }
             })
             .then(data => {
-                toast.current.show({ severity: 'success', summary: 'Éxito', detail: 'Verifica tu bandeja de entrada y sigue los pasos para resetar tu password.', life: 5000 });
+                toast.current.show({ severity: 'success', summary: 'Éxito', detail: 'Verifica tu bandeja de entrada y sigue los pasos para resetear tu contraseña.', life: 5000 });
                 setState({
                   email: ''
                 })
             })
             .catch((error) => {
-                toast.current.show({ severity: 'warn', summary: 'Error', detail: 'Ocurrio un error al intentar enviar el correo. Contacta a soporte.', life: 5000 });
+                toast.current.show({ severity: 'warn', summary: 'Error', detail: 'Ocurrió un error al intentar enviar el correo. Contacta a soporte.', life: 5000 });
                 e.target[0].focus()
             })
             .finally(() => setLoading(false))
@@ -96,7 +96,7 @@ const RecuperarPassPage = () => {
                                             name="email"
                                             defaultValue={state.email}
                                             className={classNames("w-full md:w-30rem", { 'p-invalid': error === 'El correo no es válido' })}
-                                            placeholder="JuanPerez@ajvierci.com.py"
+                                            placeholder="JuanPerez@crm.com.py"
                                             style={{ padding: '1rem' }}
                                             onChange={handleChange}
                                             required

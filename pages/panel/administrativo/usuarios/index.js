@@ -94,7 +94,7 @@ const Usuarios = React.memo(() => {
       })
       .catch(error => {
         if (error.name !== 'AbortError') {
-          return toast.current?.show({ severity: 'warn', summary: 'Error !', detail: error.message || "Error en el servidor. Contacte a soporte", life: 3000 })
+          return toast.current?.show({ severity: 'warn', summary: '¡Error!', detail: error.message || "Error en el servidor. Contacte a soporte", life: 3000 })
         }
       })
       .finally(() => setLoading1(false))
@@ -157,7 +157,7 @@ const Usuarios = React.memo(() => {
         setItems([...items, newData])
       })
       .catch((error) => {
-        toast.current?.show({ severity: 'warn', summary: 'Error !', detail: error.message || "Error en el servidor. Contacte a soporte", life: 3000 })
+        toast.current?.show({ severity: 'warn', summary: '¡Error!', detail: error.message || "Error en el servidor. Contacte a soporte", life: 3000 })
       })
       .finally(() => {
         setItem(emptyItem)
@@ -184,10 +184,10 @@ const Usuarios = React.memo(() => {
         }
       })
       .then(() => {
-        item.status = item?.status === 1 ? 'Acitvo' : 'Inactivo'
+        item.status = item?.status === 1 ? 'Activo' : 'Inactivo'
         items[index] = item
       })
-      .catch((error) => toast.current?.show({ severity: 'warn', summary: 'Error !', detail: error.message || "Error en el servidor. Contacte a soporte", life: 3000 }))
+      .catch((error) => toast.current?.show({ severity: 'warn', summary: '¡Error!', detail: error.message || "Error en el servidor. Contacte a soporte", life: 3000 }))
       .finally(() => {
         setItem(emptyItem)
         setLoading1(false)
@@ -215,7 +215,7 @@ const Usuarios = React.memo(() => {
     setSubmitted(true)
 
     if (!isValidItem()) {
-      return toast.current?.show({ severity: 'warn', summary: 'Alerta!', detail: 'Faltan llenar uno o más campos', life: 3000 });
+      return toast.current?.show({ severity: 'warn', summary: '¡Alerta!', detail: 'Faltan llenar uno o más campos', life: 3000 });
     }
 
     if (item.id) {
@@ -248,7 +248,7 @@ const Usuarios = React.memo(() => {
         }
       })
       .then(() => items.splice(index, 1))
-      .catch((error) => toast.current?.show({ severity: 'warn', summary: 'Error !', detail: error.message || "Error en el servidor. Contacte a soporte", life: 3000 }))
+      .catch((error) => toast.current?.show({ severity: 'warn', summary: '¡Error!', detail: error.message || "Error en el servidor. Contacte a soporte", life: 3000 }))
       .finally(() => {
         setItem(emptyItem)
         setLoading1(false)
@@ -279,7 +279,7 @@ const Usuarios = React.memo(() => {
   const deleteItemDialogFooter = (
     <>
       <Button label="No" icon="pi pi-times" className="p-button-text" type="submit" onClick={hideDeleteitemDialog} />
-      <Button label="Si" icon="pi pi-check" className="p-button-text" onClick={() => deleteItem()} />
+      <Button label="Sí" icon="pi pi-check" className="p-button-text" onClick={() => deleteItem()} />
     </>
   );
 
@@ -381,6 +381,9 @@ const Usuarios = React.memo(() => {
     })
   }
 
+
+  const isEditing = !!item.id;
+
   let broadcrumbData = { label: 'Usuarios', icon: 'pi pi-fw pi-eye', url: routes.usuarios };
   return (
     <>
@@ -399,7 +402,7 @@ const Usuarios = React.memo(() => {
               rowsPerPageOptions={[5, 10, 25]}
               className="datatable-responsive alternar"
               paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-              currentPageReportTemplate="Mostrando del {first} al {last} de {totalRecords} items"
+              currentPageReportTemplate="Mostrando del {first} al {last} de {totalRecords} ítems"
               filters={filters}
               filterDisplay="row"
               globalFilterFields={['name', 'surname', 'cedula', 'email', 'phone', 'status', 'rol.description', 'an8', 'suc_planta', 'cod_venta']}
@@ -412,7 +415,7 @@ const Usuarios = React.memo(() => {
               <Column field="surname" header="Apellido" sortable filter filterField='surname' filterPlaceholder="Apellido"></Column>
               <Column field="cedula" header="CI" sortable filter filterField='cedula' filterPlaceholder="CI"></Column>
               <Column field="email" header="Correo" sortable filter filterField='email' filterPlaceholder="Correo"></Column>
-              <Column field="phone" header="Telefono" sortable filter filterField='phone' filterPlaceholder="Telefono"></Column>
+              <Column field="phone" header="Teléfono" sortable filter filterField='phone' filterPlaceholder="Teléfono"></Column>
               <Column field="rol.description" header="Rol" sortable filter filterField='rol.description' filterPlaceholder="Rol"></Column>
               <Column field="status" header="Estado" showFilterMenu={false} body={statusBodyTemplate} filter filterElement={statusRowFilterTemplate}></Column>
               <Column field="acciones" header="Acciones" body={actionBodyTemplate}></Column>
@@ -429,7 +432,7 @@ const Usuarios = React.memo(() => {
                     onChange={(e) => onInputChange(e, 'name')}
                     required
                     autoFocus
-                    className={classNames({ 'p-invalid': submitted && !item.name })} placeholder="Juan Carlos" />
+                    className={classNames({ 'p-invalid': submitted && !item.name })} placeholder="Juan" />
                   {submitted && !item.name && <small className="p-invalid p-error">El NOMBRE es requerido.</small>}
                 </div>
                 <div className={classNames({ 'p-input-filled': item.surname }, 'field col')}>
@@ -439,8 +442,8 @@ const Usuarios = React.memo(() => {
                     value={item.surname}
                     onChange={(e) => onInputChange(e, 'surname')}
                     required
-                    className={classNames({ 'p-invalid': submitted && !item.surname })} placeholder="Perez Lopez" />
-                  {submitted && !item.surname && <small className="p-invalid p-error">La DIRECCIÓN es requerida.</small>}
+                    className={classNames({ 'p-invalid': submitted && !item.surname })} placeholder="Perez" />
+                  {submitted && !item.surname && <small className="p-invalid p-error">El APELLIDO es requerido.</small>}
                 </div>
               </div>
 
@@ -452,7 +455,7 @@ const Usuarios = React.memo(() => {
                     value={item.email}
                     onChange={(e) => onInputChange(e, 'email')}
                     required
-                    className={classNames({ 'p-invalid': submitted && !item.email })} placeholder="micorreo@ajvierci.com.py" />
+                    className={classNames({ 'p-invalid': submitted && !item.email })} placeholder="micorreo@crm.com.py" />
                   {submitted && !item.email && <small className="p-invalid p-error">El CORREO es requerido.</small>}
                 </div>
 
@@ -471,6 +474,7 @@ const Usuarios = React.memo(() => {
               </div>
 
               <div className="formgrid grid">
+                
                 <div className={classNames({ 'p-input-filled': item.cedula }, 'field col')}>
                   <label>CI</label>
                   <InputText
@@ -478,9 +482,12 @@ const Usuarios = React.memo(() => {
                     value={item.cedula}
                     onChange={(e) => onInputChange(e, 'cedula')}
                     placeholder={999.999}
-                    className={classNames({ 'p-invalid': submitted && !item.cedula })} />
+                    className={classNames({ 'p-invalid': submitted && !item.cedula })}
+                    disabled={isEditing} // Aquí se  decide si el campo es editable o no
+                     />
                   {submitted && !item.cedula && <small className="p-invalid p-error">El CI es requerido.</small>}
                 </div>
+
                 <div className={classNames({ 'p-input-filled': item.rol }, 'field col')}>
                   <label>Rol</label>
                   <Dropdown
@@ -510,7 +517,7 @@ const Usuarios = React.memo(() => {
                       autoComplete="new-password"
                       placeholder="Ingresa la contraseña"
                       toggleMask
-                      tooltip='De contener minimo 10 caracteres'
+                      tooltip='Debe contener mínimo 10 caracteres'
                     />
                     <Button icon="pi pi-refresh" onClick={() => generatePass()} />
                   </div>
@@ -526,7 +533,7 @@ const Usuarios = React.memo(() => {
                         onChange={e => onInputChange(e, 'status')}
                         options={[
                           { status: 'Activo', value: 'Activo' },
-                          { status: 'Inactivo', value: 'Acitvo' }
+                          { status: 'Inactivo', value: 'Inactivo' }
                         ]}
                         optionLabel="status"
                         placeholder="Selecciona el status"
@@ -542,7 +549,7 @@ const Usuarios = React.memo(() => {
                 <i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: '2rem' }} />
                 {item && (
                   <span>
-                    Estás seguro que quieres eliminar a <b>{item.name + ' ' + item.surname}</b>?
+                    ¿Estás seguro que quieres eliminar a <b>{item.name + ' ' + item.surname}</b>?
                   </span>
                 )}
               </div>

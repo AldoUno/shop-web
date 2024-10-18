@@ -58,7 +58,7 @@ const CambiarPassPage = () => {
                 <li>Al menos una letra minúscula</li>
                 <li>Al menos un número</li>
                 <li>Al menos un caracter especial</li>
-                <li>Minimo de 8 (ocho) caracteres</li>
+                <li>Mínimo de 8 (ocho) caracteres</li>
             </ul>
         </>
     );
@@ -95,7 +95,7 @@ const CambiarPassPage = () => {
                 redirectToLogin()
             })
             .catch((error) => {
-                toast.current.show({ severity: 'warn', summary: 'Alerta !', detail: error?.message || 'Ocurrio un error al intentar modificar la contraseña. Contacta a soporte.', life: 5000 });
+                toast.current.show({ severity: 'warn', summary: '¡Alerta!', detail: error?.message || 'Ocurrió un error al intentar modificar la contraseña. Contacta a soporte.', life: 5000 });
                 e.target[0].focus()
             })
             .finally(() => setLoading(false))
@@ -121,7 +121,7 @@ const CambiarPassPage = () => {
                                     <div className="p-fluid formgrid grid">
                                         <div className="field col-12 md:col-6">
                                             <label htmlFor="password1" className="block text-900 font-medium text-xl mb-2">
-                                                Nuevo Contraseña
+                                                Nueva Contraseña
                                             </label>
                                             <div className="p-inputgroup">
                                                 <span className="p-inputgroup-addon">

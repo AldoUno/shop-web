@@ -24,80 +24,160 @@ const Dashboard = React.memo(() => {
   const dashboard_items = [
     {
       id: 1,
-      title: 'Usuarios',
-      subtitle: 'Adminstración de usuarios, accesos, etc.',
-      footer: <span><Button label="Ingresa Aquí" icon="pi pi-arrow-right p-button-rounded" className="col-sm-12" onClick={() => router.push(routes.usuarios)} /></span>,
-      lottie: <Lottie animationData={client} loop={true} className="col-6 m-auto" />,
+      title: 'USUARIOS',
+      subtitle: 'Administración de usuarios, accesos, etc.',
+      image: '/usuarioss.jpg',  // Ruta de la imagen en la carpeta public
+      footer: (
+          <span>
+              <Button
+                  label="Ingresa Aquí"
+                  icon="pi pi-arrow-right p-button-rounded"
+                  className="col-sm-12"
+                  onClick={() => router.push(routes.usuarios)}
+              />
+          </span>
+      ),
       access: true
     },
     {
       id: 2,
-      title: 'Roles',
-      subtitle: 'Adminstración de roles, edición, creación etc.',
-      footer: <span><Button label="Ingresa Aquí" icon="pi pi-arrow-right p-button-rounded" className="col-sm-12" onClick={() => router.push(routes.roles)} /></span>,
-      lottie: <Lottie animationData={gestion} loop={true} className="col-6 m-auto mb-2" />,
+      title: 'ROLES',
+      subtitle: 'Administración de roles, edición, creación etc.',
+      image: '/roless.jpg',
+      footer: (
+          <span>
+              <Button
+                  label="Ingresa Aquí"
+                  icon="pi pi-arrow-right p-button-rounded"
+                  className="col-sm-12"
+                  onClick={() => router.push(routes.roles)}
+              />
+          </span>
+      ),
       access: true
     },
     {
       id: 3,
-      title: 'Vistas',
-      subtitle: 'Adminstración de vistas, edición, creación etc.',
-      footer: <span><Button label="Ingresa Aquí" icon="pi pi-arrow-right p-button-rounded" className="col-sm-12" onClick={() => router.push(routes.views)} /></span>,
-      lottie: <Lottie animationData={analisis} loop={true} className="col-6 m-auto mb-2" />,
-      access: true
-    },
+      title: 'VISTAS',
+      subtitle: 'Administración de vistas, edición, creación etc.',
+      image: '/vistass.jpg',
+      footer: (
+        <span>
+            <Button
+                label="Ingresa Aquí"
+                icon="pi pi-arrow-right p-button-rounded"
+                className="col-sm-12"
+                onClick={() => router.push(routes.views)}
+            />
+        </span>
+    ),
+    access: true
+  },
     {
       id: 4,
-      title: 'Permisos',
-      subtitle: 'Adminstración de permisos, edición, creación etc.',
-      footer: <span><Button label="Ingresa Aquí" icon="pi pi-arrow-right p-button-rounded" className="col-sm-12" onClick={() => router.push(routes.permissions)} /></span>,
-      lottie: <Lottie animationData={seguridad} loop={true} className="col-6 m-auto mb-2" />,
-      access: true
-    },
+      title: 'PERMISOS',
+      subtitle: 'Administración de permisos, edición, creación etc.',
+      image: '/permisoss.jpg',
+      footer: (
+        <span>
+            <Button
+                label="Ingresa Aquí"
+                icon="pi pi-arrow-right p-button-rounded"
+                className="col-sm-12"
+                onClick={() => router.push(routes.permissions)}
+            />
+        </span>
+    ),
+    access: true
+  },
     {
         id: 5,
-        title: 'Productos',
-        subtitle: 'Adminstración de productos, edición, creación etc.',
-        footer: <span><Button label="Ingresa Aquí" icon="pi pi-arrow-right p-button-rounded" className="col-sm-12" onClick={() => router.push(routes.products)} /></span>,
-        lottie: <Lottie animationData={prodcut} loop={true} className="col-6 m-auto mb-2" />,
-        access: true
-      },
+        title: 'PRODUCTOS',
+        subtitle: 'Administración de productos, edición, creación etc.',
+        image: '/productoss.jpg',
+        footer: (
+          <span>
+              <Button
+                  label="Ingresa Aquí"
+                  icon="pi pi-arrow-right p-button-rounded"
+                  className="col-sm-12"
+                  onClick={() => router.push(routes.products)}
+              />
+          </span>
+      ),
+      access: true
+    },
       {
         id: 6,
-        title: 'Ordenes',
-        subtitle: 'Adminstración de ordenes, edición, creación etc.',
-        footer: <span><Button label="Ingresa Aquí" icon="pi pi-arrow-right p-button-rounded" className="col-sm-12" onClick={() => router.push(routes.orders)} /></span>,
-        lottie: <Lottie animationData={order} loop={true} className="col-6 m-auto mb-2" />,
-        access: true
-      },
+        title: 'ÓRDENES',
+        subtitle: 'Administración de órdenes, edición, creación etc.',
+        image: '/orderss.jpg',
+        footer: (
+          <span>
+              <Button
+                  label="Ingresa Aquí"
+                  icon="pi pi-arrow-right p-button-rounded"
+                  className="col-sm-12"
+                  onClick={() => router.push(routes.orders)}
+              />
+          </span>
+      ),
+      access: true
+    },
       {
-        id: 6,
-        title: 'Categorias',
-        subtitle: 'Adminstración de categorias, edición, creación etc.',
-        footer: <span><Button label="Ingresa Aquí" icon="pi pi-arrow-right p-button-rounded" className="col-sm-12" onClick={() => router.push(routes.category)} /></span>,
-        lottie: <Lottie animationData={category} loop={true} className="col-6 m-auto mb-2" />,
-        access: true
-      }
-  ]
+        id: 7,
+        title: 'CATEGORÍAS',
+        subtitle: 'Administración de categorías, edición, creación etc.',
+        image: '/categorys.jpg',
+        footer: (
+          <span>
+              <Button
+                  label="Ingresa Aquí"
+                  icon="pi pi-arrow-right p-button-rounded"
+                  className="col-sm-12"
+                  onClick={() => router.push(routes.category)}
+              />
+          </span>
+      ),
+      access: true
+    },
+      {
+        id: 8,
+        title: 'PROVEEDORES',
+        subtitle: 'Administración de proveedores, edición, creación etc.',
+        image: '/proveedoress.jpg',
+        footer: (
+          <span>
+              <Button
+                  label="Ingresa Aquí"
+                  icon="pi pi-arrow-right p-button-rounded"
+                  className="col-sm-12"
+                  onClick={() => router.push(routes.proveedores)}
+              />
+          </span>
+      ),
+      access: true
+    },
+  ];
 
   return (
-    <>
-      <Guia ruta="/" />
-      <div className="flex flex-wrap" >
-        {
-          dashboard_items.map(item => {
-            if (item.access) {
-              return (
-                <div className="col-12 md:col-6 lg:col-4 text-center" key={item.id}>
-                  <Card header={item.lottie} title={item.title} subTitle={item.subtitle} footer={item.footer} className="mb-1" style={{ borderRadius: '12px' }} />
-                </div>
-              )
-            }
-          })
-        }
-      </div>
-    </>
-  )
+    <div className="flex flex-wrap">
+        {dashboard_items.map(item => {
+          if (item.access) {
+            return (
+            <div key={item.id} className="col-12 md:col-2 lg:col-4 text-center" //aquí se ajusta el tamaño de la card
+            style={{ borderRadius: '10px' }}>
+              <Card className="mb-auto" style={{ borderRadius: '10px' }} /*auto hace que se ajuste automáticamente el box contenedor*/ > 
+                <img src={item.image} alt={item.title} className="dashboard-image md:col-8 m-auto" /*lo mismo acá*/ />
+                <h3 className="m-auto"><b>{item.title}</b></h3>
+                <p>{item.subtitle}</p>
+                {item.footer}
+                </Card>
+            </div>
+            )}
+})}
+    </div>
+);
 })
 
 export default Dashboard

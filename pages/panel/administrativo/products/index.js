@@ -102,7 +102,7 @@ const Products = React.memo(() => {
       })
       .catch(error => {
         if (error.name !== 'AbortError') {
-          return toast.current?.show({ severity: 'warn', summary: 'Error !', detail: error.message || "Error en el servidor. Contacte a soporte", life: 3000 })
+          return toast.current?.show({ severity: 'warn', summary: '¡Error!', detail: error.message || "Error en el servidor. Contacte a soporte", life: 3000 })
         }
       })
       .finally(() => setLoading1(false))
@@ -128,7 +128,7 @@ const Products = React.memo(() => {
 
     const item_to_insert = {
       ...item,
-      ['category_id']: item.category.id,
+      ['category_id']: item.category,
     }
 
     delete item_to_insert.category
@@ -152,7 +152,7 @@ const Products = React.memo(() => {
         setItems([...items, newData])
       })
       .catch((error) => {
-        toast.current?.show({ severity: 'warn', summary: 'Error !', detail: error.message || "Error en el servidor. Contacte a soporte", life: 3000 })
+        toast.current?.show({ severity: 'warn', summary: '¡Error!', detail: error.message || "Error en el servidor. Contacte a soporte", life: 3000 })
       })
       .finally(() => {
         setItem(emptyItem)
@@ -172,30 +172,40 @@ const Products = React.memo(() => {
   };
 
   const editarItem = () => {
+   
     setLoading1(true);
-    item.status = item?.status == 'Activo' ? 1 : 0
+    item.status = item?.status == 'Activo' ? 1 : 0;
+    console.log(item)
+    const item_to_update = {
+        ...item,
+        category_id: item.category?.id || item.category  // Verifica que el ID esté presente
+        
+    };
+   
 
     const index = findIndexById(item.id);
-    Edit(item, 'update-product', item.id)
+    Edit(item_to_update, 'update-product', item.id)
       .then(async response => {
-        if (response.status == 200) {
-          toast.current?.show(messages.mensajeExitosoEdit)
-          return response.json()
+        if (response.status === 200) {
+          toast.current?.show(messages.mensajeExitosoEdit);
+          return response.json();
         } else {
-          const { msg } = await response.json()
-          throw new Error(msg)
+          const { msg } = await response.json();
+          throw new Error(msg);
         }
       })
       .then(() => {
-        item.status = item?.status == 1 ? 'Acitvo' : 'Inactivo'
-        items[index] = item
+        item.status = item?.status === 1 ? 'Activo' : 'Inactivo';
+        items[index] = item;
       })
-      .catch((error) => toast.current?.show({ severity: 'warn', summary: 'Error !', detail: error.message || "Error en el servidor. Contacte a soporte", life: 3000 }))
+      .catch(error => {
+        toast.current?.show({ severity: 'warn', summary: '¡Error!', detail: error.message || 'Error en el servidor. Contacte a soporte', life: 3000 });
+      })
       .finally(() => {
-        setItem(emptyItem)
-        setLoading1(false)
-      })
-  };
+        setItem(emptyItem);
+        setLoading1(false);
+      });
+};
 
   const eliminarItem = () => {
     setLoading1(true);
@@ -211,7 +221,7 @@ const Products = React.memo(() => {
         }
       })
       .then(() => items.splice(index, 1))
-      .catch((error) => toast.current?.show({ severity: 'warn', summary: 'Error !', detail: error.message || "Error en el servidor. Contacte a soporte", life: 3000 }))
+      .catch((error) => toast.current?.show({ severity: 'warn', summary: '¡Error!', detail: error.message || "Error en el servidor. Contacte a soporte", life: 3000 }))
       .finally(() => {
         setItem(emptyItem)
         setLoading1(false)
@@ -221,7 +231,7 @@ const Products = React.memo(() => {
   const saveItem = () => {
     setSubmitted(true)
     if (!item.name || !item.category) {
-      return toast.current?.show({ severity: 'warn', summary: 'Alerta!', detail: 'Faltan llenar uno o más campos', life: 3000 });
+      return toast.current?.show({ severity: 'warn', summary: '¡Alerta!', detail: 'Faltan llenar uno o más campos', life: 3000 });
     }
     if (item.id) {
       editarItem();
@@ -250,13 +260,32 @@ const Products = React.memo(() => {
     setItem(emptyItem);
   };
 
+
   const onInputChange = (e, name) => {
     let val = (e.target && e.target.value) || '';
     let _item = { ...item };
     _item[`${name}`] = val;
 
-    setItem(_item);
-  };
+    // Calcular el IVA si y solo si el campo que se cambió es 'precio'
+    if (name === 'precio') {
+        const precio = parseFloat(val) || 0; // Debe ser un número
+        const porcentajeIva = parseFloat(item.porcen_iva) / 100 || 0; // Convertir el valor del IVA a un decimal (ej. 5% -> 0.05)
+        const iva = (precio * porcentajeIva).toFixed(2); // Calcula el IVA con el 5%
+        _item.iva = iva; // Establece el IVA calculado
+    }
+
+          // Si el campo es la categoría, también actualiza el category_id y el código de barra
+    if (name === 'category') {
+      const selectedCategory = categories.find(cat => cat.id === val); // Encuentra la categoría seleccionada
+      if (selectedCategory) {
+          _item.category_id = selectedCategory.id; // Actualiza el id de la categoría
+          _item.codbarra = selectedCategory.id; // Asigna el id de la categoría al código de barra
+      }
+  }
+
+  setItem(_item);
+};
+
 
   const onGlobalFilterChange = (e) => {
     const value = e.target.value;
@@ -273,7 +302,7 @@ const Products = React.memo(() => {
     setItems(_items);
     setDeleteItemsDialog(false);
     setSelectedItems(null);
-    toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Items eliminados', life: 3000 });
+    toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Ítems eliminados', life: 3000 });
   };
 
   const hideDeleteItemsDialog = () => {
@@ -334,13 +363,13 @@ const Products = React.memo(() => {
   const deleteItemDialogFooter = (
     <>
       <Button label="No" icon="pi pi-times" className="p-button-text" type="submit" onClick={hideDeleteItemDialog} />
-      <Button label="Si" icon="pi pi-check" className="p-button-text" onClick={deleteItem} />
+      <Button label="Sí" icon="pi pi-check" className="p-button-text" onClick={deleteItem} />
     </>
   );
   const deleteItemsDialogFooter = (
     <>
       <Button label="No" icon="pi pi-times" className="p-button-text" onClick={hideDeleteItemsDialog} />
-      <Button label="Si" icon="pi pi-check" className="p-button-text" onClick={deleteSelectedItems} />
+      <Button label="Sí" icon="pi pi-check" className="p-button-text" onClick={deleteSelectedItems} />
     </>
   )
 
@@ -362,7 +391,7 @@ const Products = React.memo(() => {
               rowsPerPageOptions={[5, 10, 25]}
               className="datatable-responsive alternar"
               paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-              currentPageReportTemplate="Mostrando del {first} al {last} de {totalRecords} items"
+              currentPageReportTemplate="Mostrando del {first} al {last} de {totalRecords} ítems"
               filters={filters}
               filterDisplay="row"
               globalFilterFields={['name', 'category.description', 'codproducto', 'codbarra', 'descripcion', 'marca', 'existencia', 'status', 'precio', 'iva', 'porcen_iva', 'url']}
@@ -372,16 +401,16 @@ const Products = React.memo(() => {
               removableSort
             >             
               <Column field="name" header="Nombre" sortable filter filterField='name' filterPlaceholder="Nombre"></Column>
-              <Column field="category.description" header="Categoria" sortable filter filterField='category.description' filterPlaceholder="Categoria" body={categoryBodyTemplate}></Column>
-              <Column field="codbarra" header="CB" sortable filter filterField='codbarra' filterPlaceholder="Cod. barra"></Column>
-              <Column field="descripcion" header="Descripcion" sortable filter filterField='descripcion' filterPlaceholder="Descripcion"></Column>
+              <Column field="category.description" header="Categoría" sortable filter filterField='category.description' filterPlaceholder="Categoría" body={categoryBodyTemplate}></Column>
+              <Column field="codbarra" header="CP" sortable filter filterField='codbarra' filterPlaceholder="Cod. producto"></Column>
+              <Column field="descripcion" header="Descripción" sortable filter filterField='descripcion' filterPlaceholder="Descripción"></Column>
               <Column field="marca" header="Marca" sortable filter filterField='marca' filterPlaceholder="Marca"></Column>
               <Column field="existencia" header="Stock" sortable filter filterField='existencia' filterPlaceholder="Stock"></Column>
               <Column field="status" header="Estado" showFilterMenu={false} body={statusBodyTemplate} filter filterElement={statusRowFilterTemplate}></Column>
               <Column field="precio" header="Precio" sortable filter filterField='precio' filterPlaceholder="Precio"></Column>
-              <Column field="iva" header="IVA" sortable filter filterField='iva' filterPlaceholder="Iva"></Column>
+              <Column field="iva" header="IVA" sortable filter filterField='iva' filterPlaceholder="IVA"></Column>
               <Column field="porcen_iva" header="%IVA" sortable filter filterField='porcen_iva' filterPlaceholder="%"></Column>
-              <Column field="url" header="URL" sortable filter filterField='url' filterPlaceholder="url"></Column>
+              <Column field="url" header="URL de la Imagen" sortable filter filterField='url' filterPlaceholder="url"></Column>
               <Column field="acciones" header="Acciones" body={actionBodyTemplate}></Column>
             </DataTable>
 
@@ -396,36 +425,37 @@ const Products = React.memo(() => {
                     onChange={(e) => onInputChange(e, 'name')}
                     required
                     autoFocus
-                    className={classNames({ 'p-invalid': submitted && !item.name })} placeholder="Red bull" />
+                    className={classNames({ 'p-invalid': submitted && !item.name })} placeholder="Red Bull" />
                   {submitted && !item.name && <small className="p-invalid p-error">El NOMBRE es requerido.</small>}
                 </div>
 
                 <div className={classNames({ 'p-input-filled': item.category }, 'field col')}>
-                  <label>Categoria</label>
+                  <label>Categoría</label>
                   <Dropdown
                     value={item.category}
-                    onChange={e => onInputChange(e, 'category')}
-                    options={categories}
+                    onChange={(e) => {
+                      onInputChange(e, 'category'); // Actualizamos la categoría
+                    }}
+                    options={categories.sort((a, b) => a.description.localeCompare(b.description))} // Ordena alfabéticamente
                     optionLabel="description"
-                    placeholder="Selecciona la categoria"
+                    optionValue="id"
+                    placeholder="Selecciona la categoría"
                     className={classNames({ 'p-invalid': submitted && !item.category })}
                   />
-                  {submitted && !item.category && <small className="p-invalid p-error">La categoria es requerida.</small>}
+                  {submitted && !item.category && <small className="p-invalid p-error">La CATEGORÍA es requerida.</small>}
                 </div>
               </div>
 
               <div className="formgrid grid">
-
-
                 <div className={classNames({ 'p-input-filled': item.codbarra }, 'field col')}>
-                  <label htmlFor="codbarra">Cod. Barra</label>
+                  <label htmlFor="codbarra">Código de Producto</label>
                   <InputText
                     id="codbarra"
                     value={item.codbarra}
                     onChange={(e) => onInputChange(e, 'codbarra')}
                     required                    
-                    className={classNames({ 'p-invalid': submitted && !item.codbarra })} placeholder="codbarra" />
-                  {submitted && !item.codbarra && <small className="p-invalid p-error">El codbarra es requerido.</small>}
+                    className={classNames({ 'p-invalid': submitted && !item.codbarra })} placeholder="Código de Producto" />
+                  {submitted && !item.codbarra && <small className="p-invalid p-error">El CÓDIGO DEL PRODUCTO es requerido.</small>}
                 </div>
               </div>
 
@@ -436,9 +466,9 @@ const Products = React.memo(() => {
                     id="descripcion"
                     value={item.descripcion}
                     onChange={(e) => onInputChange(e, 'descripcion')}
-                    placeholder="descripcion"
+                    placeholder="Descripción"
                     className={classNames({ 'p-invalid': submitted && !item.descripcion })} />
-                  {submitted && !item.descripcion && <small className="p-invalid p-error">La descripcion es requerido.</small>}
+                  {submitted && !item.descripcion && <small className="p-invalid p-error">La DESCRIPCIÓN es requerida.</small>}
                 </div>
                 <div className={classNames({ 'p-input-filled': item.marca }, 'field col')}>
                   <label>Marca</label>
@@ -446,9 +476,9 @@ const Products = React.memo(() => {
                     id="marca"
                     value={item.marca}
                     onChange={(e) => onInputChange(e, 'marca')}
-                    placeholder="marca"
+                    placeholder="Marca"
                     className={classNames({ 'p-invalid': submitted && !item.marca })} />
-                  {submitted && !item.marca && <small className="p-invalid p-error">La marca es requerido.</small>}
+                  {submitted && !item.marca && <small className="p-invalid p-error">La MARCA es requerida.</small>}
                 </div>
               </div>
 
@@ -461,17 +491,18 @@ const Products = React.memo(() => {
                     onChange={(e) => onInputChange(e, 'existencia')}
                     placeholder={999}
                     className={classNames({ 'p-invalid': submitted && !item.existencia })} />
-                  {submitted && !item.existencia && <small className="p-invalid p-error">El stock es requerido.</small>}
+                  {submitted && !item.existencia && <small className="p-invalid p-error">El STOCK es requerido.</small>}
                 </div>
+
                 <div className={classNames({ 'p-input-filled': item.precio }, 'field col')}>
                   <label>Precio</label>
                   <InputText
                     id="precio"
                     value={item.precio}
                     onChange={(e) => onInputChange(e, 'precio')}
-                    placeholder="precio"
+                    placeholder="Precio"
                     className={classNames({ 'p-invalid': submitted && !item.precio })} />
-                  {submitted && !item.precio && <small className="p-invalid p-error">El precio es requerido.</small>}
+                  {submitted && !item.precio && <small className="p-invalid p-error">El PRECIO es requerido.</small>}
                 </div>
               </div>
 
@@ -481,22 +512,28 @@ const Products = React.memo(() => {
                   <InputText
                     id="iva"
                     value={item.iva}
+                    readOnly 
                     onChange={(e) => onInputChange(e, 'iva')}
-                    placeholder={999}
                     className={classNames({ 'p-invalid': submitted && !item.iva })} />
                   {submitted && !item.iva && <small className="p-invalid p-error">El IVA es requerido.</small>}
                 </div>
+
                 <div className={classNames({ 'p-input-filled': item.porcen_iva }, 'field col')}>
                   <label>% I.V.A.</label>
-                  <InputText
-                    id="porcen_iva"
+                  <Dropdown
+                    id="iva"
                     value={item.porcen_iva}
                     onChange={(e) => onInputChange(e, 'porcen_iva')}
-                    placeholder="10%"
-                    className={classNames({ 'p-invalid': submitted && !item.porcen_iva })} />
+                    options={[
+                      { label: '5%', value: '5' },
+                      { label: '10%', value: '10' },
+                    ]}
+                    placeholder="Selecciona IVA"
+                    className={classNames({ 'p-invalid': submitted && !item.porcen_iva })}
+                  />
                   {submitted && !item.porcen_iva && <small className="p-invalid p-error">El IVA es requerido.</small>}
                 </div>
-              </div>
+                </div>
 
               <div className="formgrid grid">
                 <div className={classNames({ 'p-input-filled': item.url }, 'field col')}>
@@ -505,9 +542,9 @@ const Products = React.memo(() => {
                     id="url"
                     value={item.url}
                     onChange={(e) => onInputChange(e, 'url')}
-                    placeholder="Imagen"
+                    placeholder="Inserta url de imagen"
                     className={classNames({ 'p-invalid': submitted && !item.url })} />
-                  {submitted && !item.url && <small className="p-invalid p-error">El stock es requerido.</small>}
+                  {submitted && !item.url && <small className="p-invalid p-error">La URL es requerida.</small>}
                 </div>
 
                 {
@@ -519,7 +556,7 @@ const Products = React.memo(() => {
                         onChange={e => onInputChange(e, 'status')}
                         options={[
                           { status: 'Activo', value: 'Activo' },
-                          { status: 'Inactivo', value: 'Acitvo' }
+                          { status: 'Inactivo', value: 'Inactivo' }
                         ]}
                         optionLabel="status"
                         placeholder="Selecciona el status"
@@ -536,7 +573,7 @@ const Products = React.memo(() => {
                 <i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: '2rem' }} />
                 {item && (
                   <span>
-                    Estás seguro que quieres eliminar el Permiso Nº <b>{item.id}</b>?
+                    ¿Estás seguro que quieres eliminar el Producto N° <b>{item.id}</b>: <b>{item.name}</b>?
                   </span>
                 )}
               </div>
@@ -545,7 +582,7 @@ const Products = React.memo(() => {
             <Dialog visible={deleteItemsDialog} style={{ width: '450px' }} header="Confirm" modal footer={deleteItemsDialogFooter} onHide={hideDeleteItemsDialog}>
               <div className="flex align-items-center justify-content-center">
                 <i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: '2rem' }} />
-                {item && <span>Estás seguro que quieres eliminar los items seleccionados?</span>}
+                {item && <span>¿Estás seguro que quieres eliminar el o los ítems seleccionados?</span>}
               </div>
             </Dialog>
           </div>

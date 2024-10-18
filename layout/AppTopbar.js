@@ -47,7 +47,7 @@ const AppTopbar = forwardRef((props, ref) => {
 
   const confirm = (position) => {
     confirmDialog({
-      message: 'Seguro que quieres cerrar sesión ?',
+      message: '¿Seguro que quieres cerrar sesión?',
       header: 'Cerrar Sesión',
       icon: 'pi pi-info-circle',
       position,

@@ -1,9 +1,9 @@
-describe('Test de Login en Santa Librada', () => {
-  it('Usuario logeandose en la web', () => {
+describe('Test de Login en La Candelaria', () => {
+  it('Usuario logueándose en la web', () => {
     cy.visit('http://localhost:3000/auth/login/')
 
-    cy.get("input[name=email]").type("santiago-heilborn@ajvierci.com.py");
-    cy.get("input[name=password]").type("H4zun4n0n1");
+    cy.get("input[name=email]").type("damian@crm.com.py");
+    cy.get("input[name=password]").type("passw0rd");
 
     cy.contains('Iniciar Sesión').focus()
     cy.contains('Iniciar Sesión').click()

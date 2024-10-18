@@ -1,20 +1,26 @@
 export const getSeverityGestion = (status) => {
   switch (status) {
-    case 'Borrador':
-      return 'warning';
-
+    
     case 'Activo':
-      return 'success';
+      return 'warning';
 
     case 'Preparacion':
       return 'info';
 
     case 'Confirmado':
       return 'success';
-
-    case 'Migrado':
-      return 'contrast';
+    
   }
+};
+
+
+const getFormatState = (rowData) => {
+  return (
+    <Tag 
+      value={rowData?.status?.description} 
+      severity={getSeverity(rowData?.status?.description)} 
+    />
+  );
 };
 
 export const getSeverity = (status) => {

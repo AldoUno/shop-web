@@ -66,7 +66,7 @@ const Categorias = React.memo(() => {
       .then(data => setItems(data.data))
       .catch((error) => {
         if (error.name !== 'AbortError') {
-          toast.current?.show({ severity: 'warn', summary: 'Error !', detail: error.message || "Error en el servidor. Contacte a soporte", life: 3000 })
+          toast.current?.show({ severity: 'warn', summary: '¡Error!', detail: error.message || "Error en el servidor. Contacte a soporte", life: 3000 })
         }
       })
       .finally(() => {
@@ -119,7 +119,7 @@ const Categorias = React.memo(() => {
       })
       .then((data) => items.push(data.data))
       .catch((error) => {
-        toast.current?.show({ severity: 'warn', summary: 'Error !', detail: error.message || "Error en el servidor. Contacte a soporte", life: 3000 })
+        toast.current?.show({ severity: 'warn', summary: '¡Error!', detail: error.message || "Error en el servidor. Contacte a soporte", life: 3000 })
       })
       .finally(() => {
         setItem(emptyItem)
@@ -140,7 +140,7 @@ const Categorias = React.memo(() => {
         }
       })
       .then(() => items[index] = item)
-      .catch((error) => toast.current?.show({ severity: 'warn', summary: 'Error !', detail: error.message || "Error en el servidor. Contacte a soporte", life: 3000 }))
+      .catch((error) => toast.current?.show({ severity: 'warn', summary: '¡Error!', detail: error.message || "Error en el servidor. Contacte a soporte", life: 3000 }))
       .finally(() => {
         setItem(emptyItem)
         setLoading1(false)
@@ -161,7 +161,7 @@ const Categorias = React.memo(() => {
         }
       })
       .then(() => items.splice(index, 1))
-      .catch((error) => toast.current?.show({ severity: 'warn', summary: 'Error !', detail: error.message || "Error en el servidor. Contacte a soporte", life: 3000 }))
+      .catch((error) => toast.current?.show({ severity: 'warn', summary: '¡Error!', detail: error.message || "Error en el servidor. Contacte a soporte", life: 3000 }))
       .finally(() => {
         setItem(emptyItem)
         setLoading1(false)
@@ -171,7 +171,7 @@ const Categorias = React.memo(() => {
   const saveItem = () => {
     setSubmitted(true)
     if (!item.description) {
-      return toast.current?.show({ severity: 'warn', summary: 'Alerta!', detail: 'Faltan llenar uno o más campos', life: 3000 });
+      return toast.current?.show({ severity: 'warn', summary: '¡Alerta!', detail: 'Faltan llenar uno o más campos', life: 3000 });
     }
 
     if (item.id) {
@@ -224,7 +224,7 @@ const Categorias = React.memo(() => {
     setItems(_items);
     setDeleteItemsDialog(false);
     setSelectedItems(null);
-    toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Items eliminados', life: 3000 });
+    toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Ítems eliminados', life: 3000 });
   };
 
   const hideDeleteItemsDialog = () => {
@@ -253,7 +253,7 @@ const Categorias = React.memo(() => {
 
   const header = (
     <div className="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
-      <h5 className="m-0">Categorias</h5>
+      <h5 className="m-0">Categorías</h5>
 
       <div className="flex flex-wrap mt-2 md:mt-0">
         <Button label="Nuevo" icon="pi pi-plus" className="p-button-success mr-2" onClick={openNew} />
@@ -275,13 +275,13 @@ const Categorias = React.memo(() => {
   const deleteItemDialogFooter = (
     <>
       <Button label="No" icon="pi pi-times" className="p-button-text" type="submit" onClick={hideDeleteitemDialog} />
-      <Button label="Si" icon="pi pi-check" className="p-button-text" onClick={deleteItem} />
+      <Button label="Sí" icon="pi pi-check" className="p-button-text" onClick={deleteItem} />
     </>
   );
   const deleteItemsDialogFooter = (
     <>
       <Button label="No" icon="pi pi-times" className="p-button-text" onClick={hideDeleteItemsDialog} />
-      <Button label="Si" icon="pi pi-check" className="p-button-text" onClick={deleteSelectedItems} />
+      <Button label="Sí" icon="pi pi-check" className="p-button-text" onClick={deleteSelectedItems} />
     </>
   )
 
@@ -289,7 +289,7 @@ const Categorias = React.memo(() => {
 
   const rowClassName = (data) => (isSelectable(data) ? '' : 'p-disabled');
 
-  let broadcrumbData = { label: 'Categorias', icon: 'pi pi-fw pi-eye', url: routes.category };
+  let broadcrumbData = { label: 'Categorías', icon: 'pi pi-fw pi-eye', url: routes.category };
   return (
     <>
       <Guia ruta={broadcrumbData} />
@@ -309,11 +309,11 @@ const Categorias = React.memo(() => {
               rowsPerPageOptions={[5, 10, 25]}
               className="datatable-responsive alternar"
               paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-              currentPageReportTemplate="Mostrando del {first} al {last} de {totalRecords} items"
+              currentPageReportTemplate="Mostrando del {first} al {last} de {totalRecords} ítems"
               filters={filters}
               filterDisplay="row"
               globalFilterFields={['id', 'description']}
-              emptyMessage="No se encontraron categorias."
+              emptyMessage="No se encontraron categorías."
               header={header}
               size='small'
               removableSort
@@ -324,9 +324,9 @@ const Categorias = React.memo(() => {
               <Column field="acciones" header="Acciones" body={actionBodyTemplate}></Column>
             </DataTable>
 
-            <Dialog maximizable visible={itemDialog} style={{ width: '450px' }} header={nuevo ? 'Nueva Categoria' : 'Editar Categoria'} modal className="p-fluid" footer={itemDialogFooter} onHide={hideDialog}>
+            <Dialog maximizable visible={itemDialog} style={{ width: '450px' }} header={nuevo ? 'Nueva Categoría' : 'Editar Categoría'} modal className="p-fluid" footer={itemDialogFooter} onHide={hideDialog}>
               <div className={classNames({ 'p-input-filled': item.description }, 'field')}>
-                <label htmlFor="item">Categoria</label>
+                <label htmlFor="item">Categoría</label>
                 <InputText
                   id="item"
                   value={item.description}
@@ -334,7 +334,7 @@ const Categorias = React.memo(() => {
                   required
                   autoFocus
                   className={classNames({ 'p-invalid': submitted && !item.item })} placeholder="Bebidas" />
-                {submitted && !item.description && <small className="p-invalid p-error">La categoria es requerida.</small>}
+                {submitted && !item.description && <small className="p-invalid p-error">La CATEGORÍA es requerida.</small>}
               </div>
             </Dialog>
 
@@ -343,7 +343,7 @@ const Categorias = React.memo(() => {
                 <i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: '2rem' }} />
                 {item && (
                   <span>
-                    Estás seguro que quieres eliminar a <b>{item.description}</b>?
+                    ¿Estás seguro que quieres eliminar a <b>{item.description}</b>?
                   </span>
                 )}
               </div>
